@@ -1,0 +1,5 @@
+numpy
+langchain==0.0.351
+openai
+langchain-openai==0.0.6
+uuid

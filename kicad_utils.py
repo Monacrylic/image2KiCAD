@@ -26,6 +26,8 @@
 
 import uuid
 
+# Path to symbol library
+PATH_TO_SYMBOL_LIBRARY = "/usr/share/kicad/symbols/"
 def create_empty_kicad_sch_template():
     file_uuid = f"{uuid.uuid4()}"
     template = f"""(kicad_sch
@@ -42,6 +44,14 @@ def create_empty_kicad_sch_template():
     )
 )"""
     return template
+
+# print all files in the symbol library
+def print_all_files_in_symbol_library():
+    import os
+    for file in os.listdir(PATH_TO_SYMBOL_LIBRARY):
+        if file.endswith(".kicad_sym"):
+            print(file)
+
 
 def extract_subsection(content, subsection):
     # subsection = '(symbol "R"'
@@ -68,10 +78,12 @@ def extract_symbol_definition(lib_id):
     symbol_name = lib_id.split(":")[1] #Eg: Battery_Cell
     ## Import Library Symbols Definitions
     # This file is the reference which is defines the properties of each components
-    path_to_lib_kicad_sym_file = f"{lib_name}.kicad_sym"
+    path_to_lib_kicad_sym_file = f"{PATH_TO_SYMBOL_LIBRARY}{lib_name}.kicad_sym"
+    print(f"Reading file {path_to_lib_kicad_sym_file}")
     # Read the symbol definition from the device file
     with open(path_to_lib_kicad_sym_file, 'r') as file:
         lib_file_content = file.read()
+        
     
     subsection = extract_subsection(lib_file_content, f'(symbol "{symbol_name}"')
     if subsection is not None:
