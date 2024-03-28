@@ -87,7 +87,7 @@ def extract_symbol_definition(lib_id):
     
     subsection = extract_subsection(lib_file_content, f'(symbol "{symbol_name}"')
     if subsection is not None:
-        symbol_def_string = [2]
+        symbol_def_string = subsection[2]
         symbol_def_string = symbol_def_string.replace(f'(symbol "{symbol_name}"', f'(symbol "{lib_id}"')
         return symbol_def_string
     else:
@@ -107,12 +107,15 @@ def extract_property_value(subsection, property_name):
 def add_component_to_kicad_sch_file(kicad_sch_file,component_dict):
     ### if symbol for component is not lib_symbol, add it
     libSymbols = extract_subsection(kicad_sch_file, '(lib_symbols')
-    if libSymbols[2].find(component_dict["lib_id"]) == -1:
+    if libSymbols[2].find(f'component_dict["lib_id"]"') == -1:
         libSymbols_insert_point = libSymbols[0] + len('(lib_symbols')
         kicad_sch_file = kicad_sch_file[:libSymbols_insert_point] + f"\n {extract_symbol_definition(component_dict['lib_id'])} \n " + kicad_sch_file[libSymbols_insert_point:]
 
     ### add symbol string
     curr_lib_id = component_dict["lib_id"]
+    # lib_name = component_dict["lib_id"].split(":")[0] #Eg: Device
+    # symbol_name = component_dict["lib_id"].split(":")[1] #Eg: Battery_Cell
+    
 
     # get file uuid to add to instance section in the bottom of the file
     uuid_section = extract_subsection(kicad_sch_file, '(uuid')
@@ -124,8 +127,14 @@ def add_component_to_kicad_sch_file(kicad_sch_file,component_dict):
     
     # get symbol value from lib_symbols
     libSymbols = extract_subsection(kicad_sch_file, '(lib_symbols')
+    if libSymbols is None:
+        print("lib_symbols not found")
+        raise Exception("lib_symbols not found")
+    
     symbol_section = extract_subsection(libSymbols[2], f'(symbol "{curr_lib_id}"')
-    # print(libSymbols[2])
+    if symbol_section is None:
+        # print("symbol_section? not found")
+        raise Exception(f'symbol_section (symbol "{curr_lib_id}" not found')
     
     description = extract_property_value(symbol_section[2], "Description")
     
