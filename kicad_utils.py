@@ -268,3 +268,17 @@ def modify_kicad_sch_file(components, file_path):
     print(f"Modified file {file_path}")
     return temp_kicad_sch_file
 
+def match_libId(raw_libid:str):
+    lib_id = raw_libid
+    if "resistor" == raw_libid:
+        lib_id = "Device:R"
+    elif "capacitor" == raw_libid:
+        lib_id = "Device:C"
+    elif "transistor" == raw_libid:
+        lib_id = "Device:R"
+    elif "battery" == raw_libid  or "cell" == raw_libid:
+        lib_id = "Device:Battery"
+    elif "led" == raw_libid:
+        lib_id = "Device:LED"
+    
+    return lib_id
