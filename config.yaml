@@ -1,5 +1,0 @@
-# Mac
-# symbol_library_path: "/Applications/KiCad/kicad.app/Contents/SharedSupport/symbols/"
-# Ubuntu/Linux
-symbol_library_path: "/usr/share/kicad/symbols/"
-OPENAI_API_KEY: ""
