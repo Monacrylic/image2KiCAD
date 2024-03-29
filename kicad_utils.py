@@ -246,7 +246,7 @@ def add_component_to_kicad_sch_file(kicad_sch_file, component_dict):
 def add_wire_to_kicad_sch_file(kicad_sch_file, wire_dict):
     wire_template = f"""(wire
 		(pts
-			(xy {wire_dict['x']} {wire_dict['y']}) (xy {wire_dict['end_x']} {wire_dict['end_x']})
+			(xy {wire_dict['x']} {wire_dict['y']}) (xy {wire_dict['end_x']} {wire_dict['end_y']})
 		)
 		(stroke
 			(width 0)
@@ -282,7 +282,28 @@ def create_kicad_sch_file(wires, components):
     return file_path
 
 
-def modify_kicad_sch_file(file_path, components, wires):
+def modify_kicad_sch_file(file_path, components=None, wires=None):
+    """
+    Modifies a KiCad schematic file with the given components and wires.
+
+    Args:
+        file_path (str): Path to the KiCad schematic file to be modified. If not provided, an exception is raised.
+        components (list of dicts, optional): A list of dictionaries representing components to be added to the schematic.
+            Each dictionary should contain the keys 'lib_id', 'x', 'y', 'angle', and 'reference_name'.
+            Example: {"lib_id": "Device:Ammeter_AC", "x": 133.35, "y": 64.77, "angle": 0, "reference_name": "BT1"}
+        wires (list of dicts, optional): A list of dictionaries representing wires to be added to the schematic.
+            Each dictionary should contain the keys 'x', 'y', 'end_x', and 'end_y'.
+            Example: {"x": 148.59, "y": 77.47, "end_x": 157.48, "end_y": 77.47}
+
+    Returns:
+        str: The modified KiCad schematic file content.
+    """
+
+    if components is None:
+        components = []
+    if wires is None:
+        wires = []
+
     # create empty kicad_sch file
     with open(file_path, 'r') as file:
         temp_kicad_sch_file = file.read()
