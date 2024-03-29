@@ -12,11 +12,11 @@ temp_wires = [
 ]  # Keeping it simple for now, can add width to it in the future
 temp_components = [
     # {"lib_id": ":SW_DPST_x2", "x": 143.51, "y": 77.47, "angle":0, "reference_name": "SW1A"},
-    {"lib_id": "Device:Ammeter_AC", "x": 133.35,
-        "y": 64.77, "angle": 0, "reference_name": "BT1"},
+    # {"lib_id": "Device:Ammeter_AC", "x": 133.35,
+    # "y": 64.77, "angle": 0, "reference_name": "BT1"},
     # {"lib_id": "Device:Ammeter_AC", "x": 133.35,
     #     "y": 64.77, "angle": 0, "reference_name": "BT1"},
     {"lib_id": "Device:R", "x": 146.05, "y": 53.34,
         "angle": 90, "reference_name": "R1"}
 ]
-kicad_utils.create_kicad_sch_file(temp_components,temp_wires)
+kicad_utils.create_kicad_sch_file(temp_components, temp_wires)
