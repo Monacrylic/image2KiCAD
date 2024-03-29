@@ -65,8 +65,18 @@ def add_components_to_schematic(path_to_json = 'result.json', kicad_schematic_pa
         list_of_component_dict.append({"lib_id": kicad_utils.match_libId(symbol["lib_id"]), "x": symbol["x"], "y": symbol["y"], "angle": symbol["angle"], "reference_name": symbol["reference"]})
     
     scaled_components = scale_components(list_of_component_dict, 0.2)
+
+    # Change angle t0 90 for all resistors having angle 0 and 0 for all resistors having angle 90
+    for component in scaled_components:
+        if component["lib_id"] == "Device:R":
+            if component["angle"] == 0:
+                component["angle"] = 90
+            else:
+                component["angle"] = 0
+
     # Modify the kicad schematic file
     kicad_utils.modify_kicad_sch_file(components = scaled_components, file_path=kicad_schematic_path)
+    
 
 
 

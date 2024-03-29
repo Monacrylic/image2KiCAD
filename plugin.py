@@ -86,6 +86,7 @@ class Image2KiCAD(QWidget):
         self.append_button.setEnabled(False)
         # Start a new thread for processing
         threading.Thread(target=self.process_schematic).start()
+    
 
     def process_schematic(self):
         # Call your processing functions here
