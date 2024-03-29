@@ -36,7 +36,7 @@ def read_config(file_path):
 
 
 # Path to the configuration file
-config_file_path = 'config.yaml'
+config_file_path = 'configuration.yaml'
 
 # Read the configuration
 config = read_config(config_file_path)

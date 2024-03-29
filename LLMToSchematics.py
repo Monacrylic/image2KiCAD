@@ -1,6 +1,7 @@
 # python3 -m pip install langchain==0.0.351
 # python3 -m pip install -U openai             #(1.14.3)
 # export OPENAI_API_KEY="..."
+
 import os
 import langchain
 from langchain_core.pydantic_v1 import BaseModel, Field
@@ -11,6 +12,26 @@ from langchain import globals
 from langchain_core.runnables import chain
 import base64
 from langchain_core.output_parsers import JsonOutputParser
+
+import yaml
+import os
+
+# Path to your config.yaml file
+config_file_path = 'configuration.yaml'
+
+# Read the YAML file
+with open(config_file_path, 'r') as file:
+    config = yaml.safe_load(file)
+
+# Extract the OPENAI_API_KEY value
+openai_api_key = config.get('OPENAI_API_KEY', None)
+
+if openai_api_key:
+    # Set the environment variable
+    os.environ['OPENAI_API_KEY'] = openai_api_key
+    print('OPENAI_API_KEY loaded successfully.')
+else:
+    print('OPENAI_API_KEY not found in config.yaml.')
 
 
 def load_image(inputs: dict) -> dict:
