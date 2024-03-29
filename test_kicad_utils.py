@@ -19,4 +19,4 @@ temp_components = [
     {"lib_id": "Device:R", "x": 146.05, "y": 53.34,
         "angle": 90, "reference_name": "R1"}
 ]
-kicad_utils.create_kicad_sch_file(temp_wires, temp_components)
+kicad_utils.create_kicad_sch_file(temp_components,temp_wires)

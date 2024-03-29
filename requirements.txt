@@ -5,3 +5,4 @@ langchain-openai==0.0.6
 uuid
 PyYAML
 pyQt6
+kicad-skip

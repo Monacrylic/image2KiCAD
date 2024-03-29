@@ -1,0 +1,92 @@
+{
+    "detected_wires": [
+        {
+            "x": 50,
+            "y": 75,
+            "end_x": 100,
+            "end_y": 75
+        },
+        {
+            "x": 100,
+            "y": 75,
+            "end_x": 150,
+            "end_y": 75
+        },
+        {
+            "x": 150,
+            "y": 75,
+            "end_x": 200,
+            "end_y": 75
+        },
+        {
+            "x": 200,
+            "y": 75,
+            "end_x": 250,
+            "end_y": 75
+        },
+        {
+            "x": 100,
+            "y": 75,
+            "end_x": 100,
+            "end_y": 125
+        },
+        {
+            "x": 150,
+            "y": 75,
+            "end_x": 150,
+            "end_y": 125
+        }
+    ],
+    "detected_components": [
+        {
+            "lib_id": "R",
+            "x": 75,
+            "y": 75,
+            "angle": 0,
+            "reference": "R2",
+            "value": "R"
+        },
+        {
+            "lib_id": "R",
+            "x": 125,
+            "y": 75,
+            "angle": 0,
+            "reference": "R1",
+            "value": "R"
+        },
+        {
+            "lib_id": "C",
+            "x": 225,
+            "y": 75,
+            "angle": 0,
+            "reference": "C1",
+            "value": "C"
+        }
+    ],
+    "component_connections": [
+        {
+            "componentA_reference": "R2",
+            "componentA_pin": 1,
+            "componentB_reference": "R1",
+            "componentB_pin": 1
+        },
+        {
+            "componentA_reference": "R2",
+            "componentA_pin": 2,
+            "componentB_reference": "R1",
+            "componentB_pin": 2
+        },
+        {
+            "componentA_reference": "R1",
+            "componentA_pin": 1,
+            "componentB_reference": "C1",
+            "componentB_pin": 1
+        },
+        {
+            "componentA_reference": "R1",
+            "componentA_pin": 2,
+            "componentB_reference": "C1",
+            "componentB_pin": 2
+        }
+    ]
+}

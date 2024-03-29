@@ -331,9 +331,9 @@ def modify_kicad_sch_file(file_path, components=None, wires=None):
 
 def match_libId(raw_libid: str):
     lib_id = raw_libid
-    if "resistor" == raw_libid:
+    if raw_libid == "resistor" or raw_libid == "R":
         lib_id = "Device:R"
-    elif "capacitor" == raw_libid:
+    elif raw_libid == "capacitor" or raw_libid == "C":
         lib_id = "Device:C"
     elif "transistor" == raw_libid:
         lib_id = "Device:R"
