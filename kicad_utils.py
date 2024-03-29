@@ -333,13 +333,13 @@ def match_libId(raw_libid: str):
     lib_id = raw_libid
     if raw_libid == "resistor" or raw_libid == "R":
         lib_id = "Device:R"
-    elif raw_libid == "capacitor" or raw_libid == "C":
+    elif raw_libid == "capacitor" or raw_libid == "C" or raw_libid == "C_Small":
         lib_id = "Device:C"
     elif "transistor" == raw_libid:
         lib_id = "Device:R"
     elif "battery" == raw_libid or "cell" == raw_libid:
         lib_id = "Device:Battery"
-    elif "led" == raw_libid:
+    elif "led" == raw_libid or "LED" == raw_libid:
         lib_id = "Device:LED"
 
     return lib_id
