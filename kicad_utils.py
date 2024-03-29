@@ -261,7 +261,12 @@ def add_wire_to_kicad_sch_file(kicad_sch_file, wire_dict):
     return kicad_sch_file
 
 
-def create_kicad_sch_file(wires, components):
+def create_kicad_sch_file(components=None, wires=None):
+    if components is None:
+        components = []
+    if wires is None:
+        wires = []
+
     # create empty kicad_sch file
     temp_kicad_sch_file = create_empty_kicad_sch_template()
 
