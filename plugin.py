@@ -1,6 +1,8 @@
 import sys
-from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QFileDialog
+from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QFileDialog, QCheckBox
 from image_to_schematic import get_json_from_image, add_components_to_schematic, add_wires_to_schematic
+import time
+import threading
 
 class Image2KiCAD(QWidget):
     def __init__(self):
@@ -15,31 +17,45 @@ class Image2KiCAD(QWidget):
 
         layout = QVBoxLayout()
 
+        # Add title
         title_label = QLabel('Image2KiCAD')
         title_label.setStyleSheet('font-size: 24px; font-weight: bold;')
         layout.addWidget(title_label)
 
+        # Add circuit image selection
         file1_label = QLabel('Select Circuit Image (.png):')
         layout.addWidget(file1_label)
 
+        # Add file selection button
         self.file1_button = QPushButton('Browse')
         self.file1_button.clicked.connect(self.select_file1)
         layout.addWidget(self.file1_button)
 
-        file2_label = QLabel('Select target KiCAD file:')
+        # Add KiCAD schematic selection
+        file2_label = QLabel('Select target KiCAD schematic file:')
         layout.addWidget(file2_label)
 
+        # Add file selection button
         self.file2_button = QPushButton('Browse')
         self.file2_button.clicked.connect(self.select_file2)
         layout.addWidget(self.file2_button)
 
+        # Add instruction label
         self.instruction_label = QLabel('Select files to proceed.')
         layout.addWidget(self.instruction_label)
 
+        # add checkbox for add wires (default: checked)
+        self.addwires_checkbox = QCheckBox('Add Wires')
+        self.addwires_checkbox.setChecked(True)
+        layout.addWidget(self.addwires_checkbox)
+
+        # Add append button
         self.append_button = QPushButton('Append to Schematic')
         self.append_button.clicked.connect(self.append_to_schematic)
+        self.append_button.setEnabled(False)
         layout.addWidget(self.append_button)
 
+        # Add status label
         self.status_label = QLabel('Status: Idle')
         layout.addWidget(self.status_label)
 
@@ -63,18 +79,26 @@ class Image2KiCAD(QWidget):
     def check_files_selected(self):
         if self.image_path is not None and self.kicad_schematic_path is not None:
             self.instruction_label.setText('All set!')
+            self.append_button.setEnabled(True)
 
     def append_to_schematic(self):
         self.status_label.setText('Status: Processing...')
         self.append_button.setEnabled(False)
-        # Add main functionality here
-        gpt_result = get_json_from_image(self.image_path)
-        add_components_to_schematic(path_to_json= 'result.json', kicad_schematic_path=self.kicad_schematic_path)
-        add_wires_to_schematic(path_to_json= 'result.json', kicad_schematic_path=self.kicad_schematic_path)
-        
-        
+        # Start a new thread for processing
+        threading.Thread(target=self.process_schematic).start()
+
+    def process_schematic(self):
+        # Call your processing functions here
+        # For example:
+        # gpt_result = get_json_from_image(self.image_path)
+        add_components_to_schematic(path_to_json='result.json', kicad_schematic_path=self.kicad_schematic_path)
+
+        if self.addwires_checkbox.isChecked():
+            add_wires_to_schematic(path_to_json='result.json', kicad_schematic_path=self.kicad_schematic_path)
+        # Update status after processing completes
         self.status_label.setText('Status: Done')
         self.append_button.setEnabled(True)
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
