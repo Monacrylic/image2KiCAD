@@ -110,7 +110,7 @@ def image_to_schematics(image_path: str) -> dict:
    Given the image which contains a circuit schematic drawing, provide the following information:
    - A count of how many components are in the image
    - A list of wires present on this schematic drawing, including start and end position on the image (you may approaximate using pixel locations)
-   - A list of components present on this schematic drawing, including their name, position on the image, and orientation (you may approaximate using pixel locations)
+   - A list of components present on this schematic drawing, including their name (like resistor, capacitor, switch etc), position on the image, and orientation (you may approaximate using pixel locations)
    - A list of connections made by the components, you must make sure all the referneces stays consistent throught your answer!
    Please just reply ONLY in JSON output and nothing else!
    """

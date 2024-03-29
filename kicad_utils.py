@@ -344,5 +344,7 @@ def match_libId(raw_libid: str):
         lib_id = "Device:Battery"
     elif "led" == raw_libid or "LED" == raw_libid:
         lib_id = "Device:LED"
+    elif "switch" == raw_libid or "SW" == raw_libid or "switch_spst" == raw_libid:
+        lib_id = "Switch:SW_SPST"
 
     return lib_id

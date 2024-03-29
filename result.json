@@ -1,74 +1,204 @@
 {
     "detected_wires": [
         {
-            "x": 50,
-            "y": 50,
-            "end_x": 50,
-            "end_y": 150
+            "x": 15,
+            "y": 15,
+            "end_x": 180,
+            "end_y": 15
+        },
+        {
+            "x": 15,
+            "y": 35,
+            "end_x": 180,
+            "end_y": 35
         },
         {
             "x": 50,
-            "y": 150,
-            "end_x": 300,
-            "end_y": 150
-        },
-        {
-            "x": 300,
-            "y": 150,
-            "end_x": 300,
-            "end_y": 50
-        },
-        {
-            "x": 300,
-            "y": 50,
+            "y": 15,
             "end_x": 50,
-            "end_y": 50
+            "end_y": 70
+        },
+        {
+            "x": 90,
+            "y": 15,
+            "end_x": 90,
+            "end_y": 70
+        },
+        {
+            "x": 130,
+            "y": 15,
+            "end_x": 130,
+            "end_y": 70
+        },
+        {
+            "x": 170,
+            "y": 15,
+            "end_x": 170,
+            "end_y": 70
         }
     ],
     "detected_components": [
         {
-            "lib_id": "R",
-            "x": 175,
-            "y": 100,
+            "lib_id": "battery",
+            "x": 10,
+            "y": 25,
+            "angle": 0,
+            "reference": "BT1",
+            "value": "3V"
+        },
+        {
+            "lib_id": "switch_spst",
+            "x": 25,
+            "y": 10,
+            "angle": 0,
+            "reference": "S1",
+            "value": ""
+        },
+        {
+            "lib_id": "resistor",
+            "x": 50,
+            "y": 50,
             "angle": 90,
             "reference": "R1",
             "value": "220"
         },
         {
-            "lib_id": "LED",
-            "x": 325,
-            "y": 100,
-            "angle": 270,
+            "lib_id": "led",
+            "x": 50,
+            "y": 90,
+            "angle": 90,
             "reference": "LED1",
-            "value": "RED"
+            "value": ""
         },
         {
-            "lib_id": "BAT",
-            "x": 25,
-            "y": 100,
-            "angle": 0,
-            "reference": "BAT1",
-            "value": "3V"
+            "lib_id": "resistor",
+            "x": 90,
+            "y": 50,
+            "angle": 90,
+            "reference": "R2",
+            "value": "220"
+        },
+        {
+            "lib_id": "led",
+            "x": 90,
+            "y": 90,
+            "angle": 90,
+            "reference": "LED2",
+            "value": ""
+        },
+        {
+            "lib_id": "resistor",
+            "x": 130,
+            "y": 50,
+            "angle": 90,
+            "reference": "R3",
+            "value": "220"
+        },
+        {
+            "lib_id": "led",
+            "x": 130,
+            "y": 90,
+            "angle": 90,
+            "reference": "LED3",
+            "value": ""
+        },
+        {
+            "lib_id": "resistor",
+            "x": 170,
+            "y": 50,
+            "angle": 90,
+            "reference": "R4",
+            "value": "220"
+        },
+        {
+            "lib_id": "led",
+            "x": 170,
+            "y": 90,
+            "angle": 90,
+            "reference": "LED4",
+            "value": ""
+        },
+        {
+            "lib_id": "resistor",
+            "x": 210,
+            "y": 50,
+            "angle": 90,
+            "reference": "R5",
+            "value": "220"
+        },
+        {
+            "lib_id": "led",
+            "x": 210,
+            "y": 90,
+            "angle": 90,
+            "reference": "LED5",
+            "value": ""
         }
     ],
     "component_connections": [
         {
-            "componentA_reference": "BAT1",
+            "componentA_reference": "BT1",
             "componentA_pin": 1,
-            "componentB_reference": "R1",
+            "componentB_reference": "S1",
             "componentB_pin": 1
         },
         {
-            "componentA_reference": "BAT1",
+            "componentA_reference": "S1",
             "componentA_pin": 2,
-            "componentB_reference": "LED1",
-            "componentB_pin": 2
+            "componentB_reference": "R1",
+            "componentB_pin": 1
         },
         {
             "componentA_reference": "R1",
             "componentA_pin": 2,
             "componentB_reference": "LED1",
             "componentB_pin": 1
+        },
+        {
+            "componentA_reference": "R2",
+            "componentA_pin": 2,
+            "componentB_reference": "LED2",
+            "componentB_pin": 1
+        },
+        {
+            "componentA_reference": "R3",
+            "componentA_pin": 2,
+            "componentB_reference": "LED3",
+            "componentB_pin": 1
+        },
+        {
+            "componentA_reference": "R4",
+            "componentA_pin": 2,
+            "componentB_reference": "LED4",
+            "componentB_pin": 1
+        },
+        {
+            "componentA_reference": "R5",
+            "componentA_pin": 2,
+            "componentB_reference": "LED5",
+            "componentB_pin": 1
+        },
+        {
+            "componentA_reference": "LED1",
+            "componentA_pin": 2,
+            "componentB_reference": "LED2",
+            "componentB_pin": 2
+        },
+        {
+            "componentA_reference": "LED2",
+            "componentA_pin": 2,
+            "componentB_reference": "LED3",
+            "componentB_pin": 2
+        },
+        {
+            "componentA_reference": "LED3",
+            "componentA_pin": 2,
+            "componentB_reference": "LED4",
+            "componentB_pin": 2
+        },
+        {
+            "componentA_reference": "LED4",
+            "componentA_pin": 2
         }
     ]
 }

@@ -90,7 +90,7 @@ class Image2KiCAD(QWidget):
     def process_schematic(self):
         # Call your processing functions here
         # For example:
-        # gpt_result = get_json_from_image(self.image_path)
+        gpt_result = get_json_from_image(self.image_path)
         add_components_to_schematic(path_to_json='result.json', kicad_schematic_path=self.kicad_schematic_path)
 
         if self.addwires_checkbox.isChecked():

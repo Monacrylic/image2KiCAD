@@ -25,6 +25,27 @@ def split_diagonal_segments(wire_list):
         else:
             new_wire_list.append(segment)  # Keep non-diagonal segments unchanged
     return new_wire_list
+
+def scale_components(components, scaling_factor):
+    # Find the minimum and maximum x and y coordinates
+    min_x = min(component['x'] for component in components)
+    max_x = max(component['x'] for component in components)
+    min_y = min(component['y'] for component in components)
+    max_y = max(component['y'] for component in components)
+    
+    # Scale the components
+    scaled_components = []
+    for component in components:
+        scaled_x = min_x + (component['x'] - min_x) * scaling_factor
+        scaled_y = min_y + (component['y'] - min_y) * scaling_factor
+        scaled_component = component.copy()
+        scaled_component['x'] = int(scaled_x)
+        scaled_component['y'] = int(scaled_y)
+        scaled_components.append(scaled_component)
+    
+    return scaled_components
+
+
 ####################################################################################
 
 def get_json_from_image(image_path):
@@ -43,8 +64,9 @@ def add_components_to_schematic(path_to_json = 'result.json', kicad_schematic_pa
         # Add the component to the list
         list_of_component_dict.append({"lib_id": kicad_utils.match_libId(symbol["lib_id"]), "x": symbol["x"], "y": symbol["y"], "angle": symbol["angle"], "reference_name": symbol["reference"]})
     
+    scaled_components = scale_components(list_of_component_dict, 0.2)
     # Modify the kicad schematic file
-    kicad_utils.modify_kicad_sch_file(components = list_of_component_dict, file_path=kicad_schematic_path)
+    kicad_utils.modify_kicad_sch_file(components = scaled_components, file_path=kicad_schematic_path)
 
 
 
