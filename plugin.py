@@ -1,5 +1,6 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QFileDialog
+from image_to_schematic import get_json_from_image, add_components_to_schematic, add_wires_to_schematic
 
 class Image2KiCAD(QWidget):
     def __init__(self):
@@ -65,10 +66,15 @@ class Image2KiCAD(QWidget):
 
     def append_to_schematic(self):
         self.status_label.setText('Status: Processing...')
+        self.append_button.setEnabled(False)
         # Add main functionality here
+        gpt_result = get_json_from_image(self.image_path)
+        add_components_to_schematic(path_to_json= 'result.json', kicad_schematic_path=self.kicad_schematic_path)
+        add_wires_to_schematic(path_to_json= 'result.json', kicad_schematic_path=self.kicad_schematic_path)
         
         
         self.status_label.setText('Status: Done')
+        self.append_button.setEnabled(True)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

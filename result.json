@@ -1,72 +1,213 @@
 {
     "detected_wires": [
         {
-            "x": 50,
+            "x": 100,
             "y": 40,
-            "end_x": 150,
+            "end_x": 180,
             "end_y": 40
         },
         {
-            "x": 150,
+            "x": 180,
             "y": 40,
-            "end_x": 250,
+            "end_x": 180,
+            "end_y": 80
+        },
+        {
+            "x": 100,
+            "y": 120,
+            "end_x": 100,
             "end_y": 40
         },
         {
-            "x": 250,
-            "y": 40,
-            "end_x": 350,
-            "end_y": 40
+            "x": 100,
+            "y": 120,
+            "end_x": 180,
+            "end_y": 120
         },
         {
-            "x": 350,
-            "y": 40,
-            "end_x": 350,
-            "end_y": 90
+            "x": 180,
+            "y": 120,
+            "end_x": 180,
+            "end_y": 160
         },
         {
-            "x": 350,
-            "y": 90,
-            "end_x": 50,
-            "end_y": 90
+            "x": 180,
+            "y": 160,
+            "end_x": 300,
+            "end_y": 160
         },
         {
-            "x": 50,
-            "y": 90,
-            "end_x": 50,
-            "end_y": 40
+            "x": 300,
+            "y": 160,
+            "end_x": 300,
+            "end_y": 120
+        },
+        {
+            "x": 300,
+            "y": 120,
+            "end_x": 340,
+            "end_y": 120
+        },
+        {
+            "x": 300,
+            "y": 160,
+            "end_x": 300,
+            "end_y": 200
+        },
+        {
+            "x": 300,
+            "y": 200,
+            "end_x": 420,
+            "end_y": 200
+        },
+        {
+            "x": 420,
+            "y": 200,
+            "end_x": 420,
+            "end_y": 160
+        },
+        {
+            "x": 420,
+            "y": 160,
+            "end_x": 480,
+            "end_y": 160
+        },
+        {
+            "x": 420,
+            "y": 200,
+            "end_x": 420,
+            "end_y": 240
+        },
+        {
+            "x": 420,
+            "y": 240,
+            "end_x": 100,
+            "end_y": 240
+        },
+        {
+            "x": 100,
+            "y": 240,
+            "end_x": 100,
+            "end_y": 120
         }
     ],
     "detected_components": [
         {
-            "lib_id": "LED",
-            "x": 100,
-            "y": 40,
-            "angle": 0,
-            "reference": "D1",
-            "value": "LED"
+            "lib_id": "R",
+            "x": 180,
+            "y": 60,
+            "angle": 90,
+            "reference": "R1",
+            "value": "430K"
         },
         {
-            "lib_id": "C_Small",
-            "x": 300,
-            "y": 40,
+            "lib_id": "R",
+            "x": 180,
+            "y": 140,
             "angle": 90,
+            "reference": "R3",
+            "value": "43K"
+        },
+        {
+            "lib_id": "R",
+            "x": 300,
+            "y": 130,
+            "angle": 0,
+            "reference": "R2",
+            "value": "10K"
+        },
+        {
+            "lib_id": "R",
+            "x": 300,
+            "y": 210,
+            "angle": 0,
+            "reference": "R4",
+            "value": "39\u03a9"
+        },
+        {
+            "lib_id": "R",
+            "x": 420,
+            "y": 170,
+            "angle": 90,
+            "reference": "RV1",
+            "value": "100K"
+        },
+        {
+            "lib_id": "C",
+            "x": 160,
+            "y": 100,
+            "angle": 0,
             "reference": "C1",
-            "value": "C_Small"
+            "value": "100nF"
+        },
+        {
+            "lib_id": "C",
+            "x": 320,
+            "y": 100,
+            "angle": 0,
+            "reference": "C2",
+            "value": "100nF"
+        },
+        {
+            "lib_id": "Q",
+            "x": 240,
+            "y": 140,
+            "angle": 0,
+            "reference": "Q1",
+            "value": "2n5088"
+        },
+        {
+            "lib_id": "J",
+            "x": 60,
+            "y": 130,
+            "angle": 0,
+            "reference": "J1",
+            "value": "IN"
+        },
+        {
+            "lib_id": "J",
+            "x": 500,
+            "y": 170,
+            "angle": 0,
+            "reference": "J2",
+            "value": "OUT"
+        },
+        {
+            "lib_id": "BT",
+            "x": 80,
+            "y": 20,
+            "angle": 0,
+            "reference": "BT1",
+            "value": "9V"
         }
     ],
     "component_connections": [
         {
-            "componentA_reference": "D1",
+            "componentA_reference": "J1",
             "componentA_pin": 1,
+            "componentB_reference": "R1",
+            "componentB_pin": 1
+        },
+        {
+            "componentA_reference": "R1",
+            "componentA_pin": 2,
             "componentB_reference": "C1",
             "componentB_pin": 1
         },
         {
-            "componentA_reference": "D1",
+            "componentA_reference": "C1",
             "componentA_pin": 2,
-            "componentB_reference": "C1",
+            "componentB_reference": "Q1",
             "componentB_pin": 2
+        },
+        {
+            "componentA_reference": "Q1",
+            "componentA_pin": 2,
+            "componentB_reference": "R3",
+            "componentB_pin": 1
+        },
+        {
+            "componentA_reference": ""
         }
     ]
 }
