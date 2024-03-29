@@ -67,6 +67,7 @@ class Image2KiCAD(QWidget):
         self.status_label.setText('Status: Processing...')
         # Add main functionality here
         
+        
         self.status_label.setText('Status: Done')
 
 if __name__ == '__main__':
