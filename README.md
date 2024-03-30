@@ -14,6 +14,7 @@ A potential KiCAD plugin <b>(Work in pogress!)</b> that aims to effortlessly con
 - [License](#license)
 
 ## Introduction
+![image](https://github.com/Monacrylic/image2KiCAD/assets/44057927/c160252f-aca2-48fd-b79f-009555edab22)
 
 image2Kicad is an experimental python script with a GUI that utilizes GPT-4 to parse images into .kicad_sch files. 
 At the moment the capanilities of the script are limited to circuits containing
@@ -36,6 +37,7 @@ At the moment the capanilities of the script are limited to circuits containing
 4. Run the plugin.py script!
 
 ## Usage
+![image](https://github.com/Monacrylic/image2KiCAD/assets/44057927/d439c594-fb4a-40e4-9919-bb4b01e05cad)
 Run plugin.py and enter the necessary inputs:
 1. Select a .png file containing the schematic (Only works for super simple circuits containing the components listed above for now.)
 2. Select an empty.kicad_sch file
