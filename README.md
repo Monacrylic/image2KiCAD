@@ -38,6 +38,7 @@ At the moment the capanilities of the script are limited to circuits containing
 
 ## Usage
 ![image](https://github.com/Monacrylic/image2KiCAD/assets/44057927/d439c594-fb4a-40e4-9919-bb4b01e05cad)
+
 Run plugin.py and enter the necessary inputs:
 1. Select a .png file containing the schematic (Only works for super simple circuits containing the components listed above for now.)
 2. Select an empty.kicad_sch file
