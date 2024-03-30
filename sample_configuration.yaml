@@ -1,5 +1,11 @@
-# Mac
+# Symbol library path 
+
+# Typical path for Mac (KiCAD 8.0+)
 # symbol_library_path: "/Applications/KiCad/kicad.app/Contents/SharedSupport/symbols/"
 # Ubuntu/Linux
 symbol_library_path: "/usr/share/kicad/symbols/"
+
+
+# Enter any one of the API keys below!
 OPENAI_API_KEY: ""
+GOOGLE_API_KEY: ""

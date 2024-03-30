@@ -8,6 +8,7 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain.chains import TransformChain
 from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain import globals
 from langchain_core.runnables import chain
 import base64
@@ -25,13 +26,26 @@ with open(config_file_path, 'r') as file:
 
 # Extract the OPENAI_API_KEY value
 openai_api_key = config.get('OPENAI_API_KEY', None)
+# Extract the GOOGLE_API key value
+google_api_key = config.get('GOOGLE_API_KEY', None)
 
-if openai_api_key:
+api_in_use = None
+
+
+# Use openAI API key if available, else try google API key, else print error message
+if google_api_key:
+    # Set the environment variable
+    os.environ['GOOGLE_API_KEY'] = google_api_key
+    api_in_use = 'gemini'
+    print('GOOGLE_API_KEY loaded successfully.')
+elif openai_api_key:
     # Set the environment variable
     os.environ['OPENAI_API_KEY'] = openai_api_key
+    api_in_use = 'openai'
     print('OPENAI_API_KEY loaded successfully.')
+
 else:
-    print('OPENAI_API_KEY not found in config.yaml.')
+    print('No API key found. Please provide an API key in the configuration file.')
 
 
 def load_image(inputs: dict) -> dict:
@@ -59,7 +73,6 @@ class Wire(TypedDict):
     y: float
     end_x: float
     end_y: float
-# {"lib_id": "Switch:SW_DPST_x2", "x": 143.51, "y": 77.47, "angle":0, "reference_name": "SW1A"},
 class Component(TypedDict):
     lib_id: str
     x: float
@@ -68,18 +81,16 @@ class Component(TypedDict):
     reference: str
     value: str
 class Connections(TypedDict):
-    componentA_reference: str
-    componentA_pin: int
-    componentB_reference: str
-    componentB_pin: int
+    A_ref: str
+    A_pin: int
+    B_ref: str
+    B_pin: int
 
 
 class SchematicsInformation(BaseModel):
     """Information that describes the schematics"""
-    # symbol_count: int = Field(description="number of circuit symbols")
-    detected_wires: list[Wire] = Field(description="list of dictionary containing beginning and end coordinates of the wire")
     detected_components: list[Component] = Field(description="list of dictionary containing the name,XY coordinates, angle and reference for a circuit component")
-    component_connections: list[Connections] = Field(description="list of discitonaty containing the connections from one pin of a reference to the pin of another reference")
+    component_connections: list[Connections] = Field(description="list of dictionaries containing the connections from one pin of a reference to the pin of another reference. for eg {'A_ref': 'R1', 'A_pin': 1, 'B_ref': 'R2', 'B_pin': 2} means pin 1 of R1 is connected to pin 2 of R2")
     
 # Set verbose
 globals.set_debug(True)
@@ -87,7 +98,11 @@ globals.set_debug(True)
 @chain
 def image_model(inputs: dict):# -> str | list[str] | dict:
     """Invoke model with image and prompt."""
-    model = ChatOpenAI(temperature=0.5, model="gpt-4-vision-preview", max_tokens=1024)
+    # choose model based on the API key
+    if api_in_use == 'openai':
+        model = ChatOpenAI(temperature=0.5, model="gpt-4-vision-preview", max_tokens=1024)
+    elif api_in_use == 'gemini':
+        model = ChatGoogleGenerativeAI(model="gemini-pro-vision")
     msg = model.invoke(
         [HumanMessage(
             content=[
@@ -108,8 +123,6 @@ parser = JsonOutputParser(pydantic_object=SchematicsInformation)
 def image_to_schematics(image_path: str) -> dict:
    vision_prompt = """
    Given the image which contains a circuit schematic drawing, provide the following information:
-   - A count of how many components are in the image
-   - A list of wires present on this schematic drawing, including start and end position on the image (you may approaximate using pixel locations)
    - A list of components present on this schematic drawing, including their name in lowercase alphabet (like resistor, capacitor, switch etc), position on the image, and orientation (you may approaximate using pixel locations)
    - A list of connections made by the components, you must make sure all the referneces stays consistent throught your answer!
    Please just reply ONLY in JSON output and nothing else!
@@ -125,7 +138,7 @@ def image_text_to_schematics(image_path: str) -> dict:
     Look at this image which contains current design of a circuit schematic diagram which the user is currently working on.
     The user has requested that {user_request}
     Please construct a circuit based on these information.
-    You must make sure all the referneces stays consistent throught your answer.
+    You must make sure all the references stays consistent throught your answer.
     Please just reply ONLY in JSON output and nothing else!
     """
 

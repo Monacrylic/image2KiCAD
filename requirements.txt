@@ -6,3 +6,5 @@ uuid
 PyYAML
 pyQt6
 kicad-skip
+langchain-google-genai
+pillow

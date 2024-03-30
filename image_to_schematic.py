@@ -92,20 +92,24 @@ def add_wires_to_schematic(path_to_json = 'result.json', kicad_schematic_path = 
     # make a copy of detected connections
     all_connections = result["component_connections"].copy()
 
-    # Iterate through the list of generated components in kicad shematic
     for curr_component in schem.symbol:
         print(curr_component.property.Reference.value)
         curr_component_ref = curr_component.property.Reference.value
-    #   iterate through the list of detected connections
+        # Iterate through the list of detected connections
         for curr_connection in all_connections:
-            # if curr component is compA in curr connection
-            if curr_connection['componentA_reference'] == curr_component_ref:
-                curr_component_A_pin = curr_component.pin[curr_connection['componentA_pin']-1]
-                #find component B
-                curr_component_B = find_component_in_schem(curr_connection['componentB_reference'], schem)
-                curr_component_B_pin = curr_component_B.pin[curr_connection['componentB_pin']-1]
-                # add a wire to connect
-                wire_list.append({"x": curr_component_A_pin.location.x, "y": curr_component_A_pin.location.y, "end_x": curr_component_B_pin.location.x, "end_y":curr_component_B_pin.location.y})
-
+            # If curr component is compA in curr connection
+            if curr_connection['A_ref'] == curr_component_ref:
+                try:
+                    curr_component_A_pin = curr_component.pin[curr_connection['A_pin'] - 1]
+                    # Find component B
+                    curr_component_B = find_component_in_schem(curr_connection['B_ref'], schem)
+                    curr_component_B_pin = curr_component_B.pin[curr_connection['B_pin'] - 1]
+                    # Add a wire to connect
+                
+                    wire_list.append({"x": curr_component_A_pin.location.x, "y": curr_component_A_pin.location.y,
+                                    "end_x": curr_component_B_pin.location.x, "end_y": curr_component_B_pin.location.y})
+                except:
+                    print("Skipped a wire")
+                    continue
     new_wire_list = split_diagonal_segments(wire_list)
     kicad_utils.modify_kicad_sch_file(wires= new_wire_list, file_path=kicad_schematic_path)

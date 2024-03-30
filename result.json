@@ -1,92 +1,68 @@
 {
-    "detected_wires": [
-        {
-            "x": 70,
-            "y": 20,
-            "end_x": 70,
-            "end_y": 50
-        },
-        {
-            "x": 70,
-            "y": 50,
-            "end_x": 130,
-            "end_y": 50
-        },
-        {
-            "x": 130,
-            "y": 50,
-            "end_x": 130,
-            "end_y": 20
-        },
-        {
-            "x": 130,
-            "y": 20,
-            "end_x": 70,
-            "end_y": 20
-        },
-        {
-            "x": 130,
-            "y": 50,
-            "end_x": 130,
-            "end_y": 80
-        },
-        {
-            "x": 130,
-            "y": 80,
-            "end_x": 70,
-            "end_y": 80
-        },
-        {
-            "x": 70,
-            "y": 80,
-            "end_x": 70,
-            "end_y": 50
-        }
-    ],
     "detected_components": [
         {
-            "lib_id": "battery",
-            "x": 20,
-            "y": 20,
+            "lib_id": "LED_CHIP_BLUE-1608",
+            "x": 430,
+            "y": 240,
+            "angle": 0,
+            "reference": "LED1",
+            "value": ""
+        },
+        {
+            "lib_id": "R_US",
+            "x": 220,
+            "y": 300,
+            "angle": 0,
+            "reference": "R1",
+            "value": "220"
+        },
+        {
+            "lib_id": "S1_US",
+            "x": 157,
+            "y": 252,
+            "angle": 0,
+            "reference": "S1",
+            "value": ""
+        },
+        {
+            "lib_id": "BATT",
+            "x": 310,
+            "y": 120,
             "angle": 0,
             "reference": "BT1",
-            "value": "Battery"
-        },
-        {
-            "lib_id": "resistor",
-            "x": 130,
-            "y": 20,
-            "angle": 90,
-            "reference": "R1",
-            "value": "R"
-        },
-        {
-            "lib_id": "capacitor",
-            "x": 130,
-            "y": 80,
-            "angle": 0,
-            "reference": "C1",
-            "value": "C"
+            "value": "5V"
         }
     ],
     "component_connections": [
         {
-            "componentA_reference": "BT1",
-            "componentA_pin": 1,
-            "componentB_reference": "R1",
-            "componentB_pin": 1
+            "A_ref": "BT1",
+            "A_pin": 1,
+            "B_ref": "R1",
+            "B_pin": 1
         },
         {
-            "componentA_reference": "R1",
-            "componentA_pin": 2,
-            "componentB_reference": "C1",
-            "componentB_pin": 1
+            "A_ref": "R1",
+            "A_pin": 2,
+            "B_ref": "LED1",
+            "B_pin": 1
         },
         {
-            "componentA_reference": "C1",
-            "componentA_pin": 2,
-            "componentB_reference": "BT1",
-            "componentB_pin": 2
+            "A_ref": "S1",
+            "A_pin": 1,
+            "B_ref": "R1",
+            "B_pin": 1
+        },
+        {
+            "A_ref": "S1",
+            "A_pin": 2,
+            "B_ref": "LED1",
+            "B_pin": 2
+        },
+        {
+            "A_ref": "BT1",
+            "A_pin": 2,
+            "B_ref": "LED1",
+            "B_pin": 2
         }
     ]
 }
