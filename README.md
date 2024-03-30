@@ -15,7 +15,6 @@ A potential KiCAD plugin <b>(Work in pogress!)</b> that aims to effortlessly con
 - [License](#license)
 
 ## Introduction
-![image](https://github.com/Monacrylic/image2KiCAD/assets/44057927/c160252f-aca2-48fd-b79f-009555edab22)
 
 image2Kicad is an experimental python script with a GUI that utilizes GPT-4 to parse images into .kicad_sch files. 
 At the moment the capanilities of the script are limited to circuits containing
