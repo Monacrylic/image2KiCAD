@@ -2,6 +2,7 @@
 
 [![License](https://img.shields.io/badge/license-GNU%20GPL-blue.svg)](https://github.com/monacrylic/image2KiCAD/blob/main/LICENSE)
 
+![image](https://github.com/Monacrylic/image2KiCAD/assets/44057927/c160252f-aca2-48fd-b79f-009555edab22)
 A potential KiCAD plugin <b>(Work in pogress!)</b> that aims to effortlessly convert images to editable KiCAD schematics. No more manual tedious manual copying of schematics from datasheets.
 
 ## Table of Contents
