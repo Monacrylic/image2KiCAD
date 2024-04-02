@@ -26,6 +26,8 @@ At the moment the capanilities of the script are limited to circuits containing
 
 <b> Note: This is still a WIP, and invokving the GPT API costs money! Be sure to set a limit on your API calls.</b>
 
+You can also experiment with using the Gemini API (free at the moment), by providing the Gemini API key in the configuration.yaml file.
+
 ## Installation
 
 1. Clone the repository
@@ -39,15 +41,15 @@ At the moment the capanilities of the script are limited to circuits containing
 ## Usage
 ![image](https://github.com/Monacrylic/image2KiCAD/assets/44057927/d439c594-fb4a-40e4-9919-bb4b01e05cad)
 
-Run plugin.py and enter the necessary inputs:
+Run main.py and enter the necessary inputs:
 1. Select a .png file containing the schematic (Only works for super simple circuits containing the components listed above for now.)
 2. Select an empty.kicad_sch file
 3. Click 'Append to schematic'
 
 ## Contributing
-This plugin is in the very initial stages of prototyping (need to format and document the code). Any help is appreciated!
+This plugin is in the very initial stages of prototyping. Any help is appreciated!
 
-We're grateful for all pinoeering work done to make the KiCAD ecosystem. This plugin would be our little contribution to the amaing community of open-source develoers.
+We're grateful for all pioneering work done to make the KiCAD ecosystem what it is today. This plugin would be our little contribution to the amazing community of open-source develoers.
 
 
 ## Contributors
