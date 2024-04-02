@@ -18,7 +18,7 @@ import yaml
 import os
 
 # Path to your config.yaml file
-config_file_path = '../configuration.yaml'
+config_file_path = 'configuration.yaml'
 
 # Read the YAML file
 with open(config_file_path, 'r') as file:

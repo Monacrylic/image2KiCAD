@@ -3,6 +3,7 @@ from scripts.LLMToSchematics import image_to_schematics
 import json
 import scripts.kicad_utils as kicad_utils
 import skip
+import uuid
 
 ################################## HELPER FUNCTIONS ################################
 # to be moved into respective files
@@ -73,7 +74,15 @@ def get_json_from_image(image_path):
         json.dump(result, f, indent=4)
     return result
 
-def add_components_to_schematic(path_to_json = 'result.json', kicad_schematic_path = "testProject/testProject.kicad_sch"):
+def create_kicad_sch_file(components=None, wires=None, new_file_name=None):
+    kicad_schematic_path = kicad_utils.create_kicad_sch_file(components=components, wires=wires, new_file_name=new_file_name)
+    return kicad_schematic_path
+
+def add_components_to_schematic(path_to_json = 'result.json', kicad_schematic_path = None):
+    _kicad_schematic_path = kicad_schematic_path
+    if (_kicad_schematic_path == None):
+        _kicad_schematic_path = "temp_" + uuid.uuid4().hex + ".kicad_sch"
+
     with open('result.json', 'r') as f:
         result = json.load(f)
     
@@ -94,13 +103,15 @@ def add_components_to_schematic(path_to_json = 'result.json', kicad_schematic_pa
                 component["angle"] = 0
 
     # Modify the kicad schematic file
-    kicad_utils.modify_kicad_sch_file(components = scaled_components, file_path=kicad_schematic_path)
+    kicad_utils.modify_kicad_sch_file(components = scaled_components, file_path=_kicad_schematic_path)
+    return _kicad_schematic_path
+
     
 
 
 
 
-def add_wires_to_schematic(path_to_json = 'result.json', kicad_schematic_path = "testProject/testProject.kicad_sch"):
+def add_wires_to_schematic(path_to_json = 'result.json', kicad_schematic_path = None):
     with open('result.json', 'r') as f:
         result = json.load(f)
     
