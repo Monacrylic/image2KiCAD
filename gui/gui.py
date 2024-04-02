@@ -1,6 +1,6 @@
 import sys
 from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QFileDialog, QCheckBox
-from image_to_schematic import get_json_from_image, add_components_to_schematic, add_wires_to_schematic
+from scripts.image_to_schematic import get_json_from_image, add_components_to_schematic, add_wires_to_schematic
 import time
 import threading
 
@@ -99,10 +99,3 @@ class Image2KiCAD(QWidget):
         # Update status after processing completes
         self.status_label.setText('Status: Done')
         self.append_button.setEnabled(True)
-
-
-if __name__ == '__main__':
-    app = QApplication(sys.argv)
-    window = Image2KiCAD()
-    window.show()
-    sys.exit(app.exec())

@@ -3,31 +3,31 @@
         {
             "lib_id": "battery",
             "x": 50,
-            "y": 250,
+            "y": 100,
             "angle": 0,
-            "reference": "BAT1",
+            "reference": "B1",
             "value": "9V"
         },
         {
             "lib_id": "resistor",
-            "x": 200,
-            "y": 200,
+            "x": 150,
+            "y": 100,
             "angle": 0,
             "reference": "R1",
             "value": "330 Ohms"
         },
         {
             "lib_id": "led",
-            "x": 500,
-            "y": 200,
-            "angle": 270,
-            "reference": "LED1",
+            "x": 250,
+            "y": 100,
+            "angle": 0,
+            "reference": "D1",
             "value": ""
         }
     ],
     "component_connections": [
         {
-            "A_ref": "BAT1",
+            "A_ref": "B1",
             "A_pin": 1,
             "B_ref": "R1",
             "B_pin": 1
@@ -35,13 +35,13 @@
         {
             "A_ref": "R1",
             "A_pin": 2,
-            "B_ref": "LED1",
+            "B_ref": "D1",
             "B_pin": 1
         },
         {
-            "A_ref": "LED1",
+            "A_ref": "D1",
             "A_pin": 2,
-            "B_ref": "BAT1",
+            "B_ref": "B1",
             "B_pin": 2
         }
     ]

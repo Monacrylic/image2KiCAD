@@ -33,7 +33,7 @@ At the moment the capanilities of the script are limited to circuits containing
     ```bash
     pip install -r requirements.txt
     ```
-3. Enter your OPENAI_API_KEY in sample_configuration.yaml and rename the file as configuration.yaml
+3. Enter your OPENAI_API_KEY and symbol_library_path in sample_configuration.yaml and rename the file as configuration.yaml
 4. Run the plugin.py script!
 
 ## Usage

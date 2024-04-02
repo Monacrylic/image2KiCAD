@@ -1,7 +1,7 @@
 
-from LLMToSchematics import image_to_schematics
+from scripts.LLMToSchematics import image_to_schematics
 import json
-import kicad_utils
+import scripts.kicad_utils as kicad_utils
 import skip
 
 ################################## HELPER FUNCTIONS ################################
@@ -46,6 +46,25 @@ def scale_components(components, scaling_factor):
     return scaled_components
 
 
+
+def match_libId(raw_libid: str):
+    lib_id = raw_libid
+    if raw_libid == "resistor" or raw_libid == "R":
+        lib_id = "Device:R"
+    elif raw_libid == "capacitor" or raw_libid == "C" or raw_libid == "C_Small":
+        lib_id = "Device:C"
+    elif "transistor" == raw_libid:
+        lib_id = "Device:R"
+    elif "battery" == raw_libid or "cell" == raw_libid or "BAT" == raw_libid:
+        lib_id = "Device:Battery"
+    elif "led" == raw_libid or "LED" == raw_libid:
+        lib_id = "Device:LED"
+    elif "switch" == raw_libid or "SW" == raw_libid or "switch_spst" == raw_libid:
+        lib_id = "Switch:SW_SPST"
+
+    return lib_id
+
+
 ####################################################################################
 
 def get_json_from_image(image_path):
@@ -62,7 +81,7 @@ def add_components_to_schematic(path_to_json = 'result.json', kicad_schematic_pa
     list_of_component_dict =[]
     for symbol in result["detected_components"]:
         # Add the component to the list
-        list_of_component_dict.append({"lib_id": kicad_utils.match_libId(symbol["lib_id"]), "x": symbol["x"], "y": symbol["y"], "angle": symbol["angle"], "reference_name": symbol["reference"]})
+        list_of_component_dict.append({"lib_id": match_libId(symbol["lib_id"]), "x": symbol["x"], "y": symbol["y"], "angle": symbol["angle"], "reference_name": symbol["reference"]})
     
     scaled_components = scale_components(list_of_component_dict, 0.2)
 

@@ -28,21 +28,31 @@ import uuid
 import os
 import yaml
 
-
 def read_config(file_path):
+    """
+    Read contents from the configuration.yaml file
+
+    Parameters:
+    file_path (str): Path to the configuration file
+
+    Returns:
+    dict: A dictionary containing the configuration values
+    """
+
     with open(file_path, 'r') as file:
         config = yaml.safe_load(file)
     return config
 
 
 # Path to the configuration file
-config_file_path = 'configuration.yaml'
+config_file_path = '../configuration.yaml'
 
 # Read the configuration
 config = read_config(config_file_path)
 
 # Get the symbol library path from the configuration and expand the user path
 PATH_TO_SYMBOL_LIBRARY = os.path.expanduser(config['symbol_library_path'])
+
 
 
 def create_empty_kicad_sch_template():
@@ -66,6 +76,12 @@ def create_empty_kicad_sch_template():
 
 
 def print_all_files_in_symbol_library():
+    """
+    Print all files in the symbol library.
+
+    Returns:
+    None
+    """
     import os
     for file in os.listdir(PATH_TO_SYMBOL_LIBRARY):
         if file.endswith(".kicad_sym"):
@@ -73,13 +89,24 @@ def print_all_files_in_symbol_library():
 
 
 def extract_subsection(content, subsection):
+    """
+    Extracts a subsection from the content based on the given subsection string.
+
+    Parameters:
+        content (str): The content from which the subsection is to be extracted.
+        subsection (str): The string that marks the beginning of the subsection.
+
+    Returns:
+        list: A list containing the start index, end index, and the extracted subsection content.
+    
+    """
     # subsection = '(symbol "R"'
     # subsection = '(lib_symbols'
     subsection_start = content.find(subsection)
     if subsection_start == -1:
         return None  # Symbol not found
 
-    balance = 0  # Track the balance of parenthesis
+    balance = 0  # Track the balance of parentheses
     for i in range(subsection_start, len(content)):
         if content[i] == '(':
             balance += 1
@@ -95,6 +122,16 @@ def extract_subsection(content, subsection):
 
 
 def extract_symbol_definition(lib_id):
+    """
+    Extracts the symbol definition from the symbol library file based on the given lib_id.
+
+    Parameters:
+        lib_id (str): The lib_id of the symbol to be extracted.
+
+    Returns:
+        str: The symbol definition string.
+    """
+
     lib_name = lib_id.split(":")[0]  # Eg: Device
     symbol_name = lib_id.split(":")[1]  # Eg: Battery_Cell
     # Import Library Symbols Definitions
@@ -118,15 +155,55 @@ def extract_symbol_definition(lib_id):
 
 
 def extract_property_value(subsection, property_name):
+    """
+    Extracts the value of a property from a subsection based on the given property name.
+
+    Parameters:
+        subsection (str): The subsection from which the property value is to be extracted.
+        property_name (str): The name of the property to be extracted.
+
+    Returns:
+        str: The value of the property.
+    """
     property_start = subsection.find(f'(property "{property_name}"')
     if property_start == -1:
         return None  # Property not found
 
     value_start = subsection.find(
-        '"', property_start + len(f'(property "{property_name}"')) + 1
+        '"', property_start + len(f'(property "{property_name}"'))
     value_end = subsection.find('"', value_start + 1)
     return subsection[value_start + 1:value_end]
 
+# count number of pins in a symbol
+def count_pins_in_symbol(lib_id):
+    """
+    Count the number of pins in a symbol based on the given lib_id.
+
+    Parameters:
+        lib_id (str): The lib_id of the symbol.
+
+    Returns:
+        int: The number of pins in the symbol.
+    """
+    lib_name = lib_id.split(":")[0]  # Eg: Device
+    symbol_name = lib_id.split(":")[1]  # Eg: Battery_Cell
+    # Import Library Symbols Definitions
+    # This file is the reference which defines the properties of each component
+    path_to_lib_kicad_sym_file = f"{PATH_TO_SYMBOL_LIBRARY}{lib_name}.kicad_sym"
+
+    # Read the symbol definition from the device file
+    with open(path_to_lib_kicad_sym_file, 'r') as file:
+        lib_file_content = file.read()
+
+    subsection = extract_subsection(
+        lib_file_content, f'(symbol "{symbol_name}"')
+    if subsection is not None:
+        symbol_def_string = subsection[2]
+        pin_count = symbol_def_string.count("(pin ")
+        return pin_count
+    else:
+        raise Exception(
+            f"Symbol {symbol_name} not found in {path_to_lib_kicad_sym_file}")
 
 def add_component_to_kicad_sch_file(kicad_sch_file, component_dict):
     # if symbol for component is not lib_symbol, add it
@@ -139,6 +216,7 @@ def add_component_to_kicad_sch_file(kicad_sch_file, component_dict):
 
     # add symbol string
     curr_lib_id = component_dict["lib_id"]
+    
     # lib_name = component_dict["lib_id"].split(":")[0] #Eg: Device
     # symbol_name = component_dict["lib_id"].split(":")[1] #Eg: Battery_Cell
 
@@ -168,6 +246,12 @@ def add_component_to_kicad_sch_file(kicad_sch_file, component_dict):
     # get symbol description from lib_symbols
     property_value = extract_property_value(symbol_section[2], "Value")
 
+    # create a pin list for the symbol
+    pin_count = symbol_section[2].count("(pin ")
+    pin_uuid_list = ""
+    for i in range(pin_count): 
+        pin_uuid_list+=(f"(pin \"{i}\" (uuid {uuid.uuid4()})) \n")
+
     # TODO: set "at" of each property value = parsed_x + lib_symbol_property_x
     # Currently adding 2 pins to all components. TODO: Check lib-symbols for number of pins and add accordingly.
     symbol_instance = f"""
@@ -182,7 +266,7 @@ def add_component_to_kicad_sch_file(kicad_sch_file, component_dict):
         (fields_autoplaced yes)
         (uuid "{uuid.uuid4()}")
         (property "Reference" "{component_dict["reference_name"]}"
-            (at {component_dict["x"]} {component_dict["y"]} 0)
+            (at {component_dict["x"]} {component_dict["y"]} {component_dict["angle"]})
             (effects
                 (font
                     (size 1.27 1.27)
@@ -190,7 +274,7 @@ def add_component_to_kicad_sch_file(kicad_sch_file, component_dict):
             )
         )
         (property "Value" "{property_value}"
-            (at {component_dict["x"]} {component_dict["y"]} 0)
+            (at {component_dict["x"]} {component_dict["y"]} {component_dict["angle"]})
             (effects
                 (font
                     (size 1.27 1.27)
@@ -198,7 +282,7 @@ def add_component_to_kicad_sch_file(kicad_sch_file, component_dict):
             )
         )
         (property "Footprint" ""
-            (at {component_dict["x"]} {component_dict["y"]} 0)
+            (at {component_dict["x"]} {component_dict["y"]} {component_dict["angle"]})
             (effects
                 (font
                     (size 1.27 1.27)
@@ -207,7 +291,7 @@ def add_component_to_kicad_sch_file(kicad_sch_file, component_dict):
             )
         )
         (property "Datasheet" "~"
-            (at {component_dict["x"]} {component_dict["y"]} 0)
+            (at 0 0 0)
             (effects
                 (font
                     (size 1.27 1.27)
@@ -216,7 +300,7 @@ def add_component_to_kicad_sch_file(kicad_sch_file, component_dict):
             )
         )
         (property "Description" "{description}"
-            (at {component_dict["x"]} {component_dict["y"]} 0)
+            (at 0 0 0)
             (effects
                 (font
                     (size 1.27 1.27)
@@ -224,8 +308,9 @@ def add_component_to_kicad_sch_file(kicad_sch_file, component_dict):
                 (hide yes)
             )
         )
-        (pin "1"  (uuid {uuid.uuid4()}))
-        (pin "2"  (uuid {uuid.uuid4()}))
+        
+        {pin_uuid_list}
+
         (instances
             (project "temp_{uuid_value}"
                 (path "/{uuid_value}"
@@ -247,6 +332,18 @@ def add_component_to_kicad_sch_file(kicad_sch_file, component_dict):
 
 
 def add_wire_to_kicad_sch_file(kicad_sch_file, wire_dict):
+    """
+    Add a wire to a KiCad schematic file.
+
+    Parameters:
+        kicad_sch_file (str): The content of the KiCad schematic file.
+        wire_dict (dict): A dictionary representing the wire to be added to the schematic.
+            The dictionary should contain the keys 'x', 'y', 'end_x', and 'end_y'.
+            Example: {"x": 148.59, "y": 77.47, "end_x": 157.48, "end_y": 77.47}
+
+    Returns:
+        str: The modified KiCad schematic file content.
+    """
     wire_template = f"""(wire
 		(pts
 			(xy {wire_dict['x']} {wire_dict['y']}) (xy {wire_dict['end_x']} {wire_dict['end_y']})
@@ -264,7 +361,22 @@ def add_wire_to_kicad_sch_file(kicad_sch_file, wire_dict):
     return kicad_sch_file
 
 
-def create_kicad_sch_file(components=None, wires=None):
+def create_kicad_sch_file(components=None, wires=None, new_file_name=None):
+
+    """
+    Create a KiCad schematic file with the given components and wires.
+
+    Parameters:
+        components (list of dicts, optional): A list of dictionaries representing components to be added to the schematic.
+            Each dictionary should contain the keys 'lib_id', 'x', 'y', 'angle', and 'reference_name'.
+            Example: {"lib_id": "Device:Ammeter_AC", "x": 133.35, "y": 64.77, "angle": 0, "reference_name": "BT1"}
+        wires (list of dicts, optional): A list of dictionaries representing wires to be added to the schematic.
+            Each dictionary should contain the keys 'x', 'y', 'end_x', and 'end_y'.
+            Example: {"x": 148.59, "y": 77.47, "end_x": 157.48, "end_y": 77.47}
+
+    Returns:
+        str: The path to the created KiCad schematic file.
+    """
     if components is None:
         components = []
     if wires is None:
@@ -283,7 +395,10 @@ def create_kicad_sch_file(components=None, wires=None):
             temp_kicad_sch_file, wire)
 
     # save temp file
-    file_path = f'temp_{uuid.uuid4()}.kicad_sch'
+    if new_file_name is not None:
+        file_path = new_file_name + ".kicad_sch"
+    else:
+        file_path = f'temp_{uuid.uuid4()}.kicad_sch'
     with open(file_path, 'w') as file:
         file.write(temp_kicad_sch_file)
     print(f"Created file {file_path}")
@@ -294,7 +409,7 @@ def modify_kicad_sch_file(file_path, components=None, wires=None):
     """
     Modifies a KiCad schematic file with the given components and wires.
 
-    Args:
+    Parameters:
         file_path (str): Path to the KiCad schematic file to be modified. If not provided, an exception is raised.
         components (list of dicts, optional): A list of dictionaries representing components to be added to the schematic.
             Each dictionary should contain the keys 'lib_id', 'x', 'y', 'angle', and 'reference_name'.
@@ -330,21 +445,3 @@ def modify_kicad_sch_file(file_path, components=None, wires=None):
         file.write(temp_kicad_sch_file)
     print(f"Modified file {file_path}")
     return temp_kicad_sch_file
-
-
-def match_libId(raw_libid: str):
-    lib_id = raw_libid
-    if raw_libid == "resistor" or raw_libid == "R":
-        lib_id = "Device:R"
-    elif raw_libid == "capacitor" or raw_libid == "C" or raw_libid == "C_Small":
-        lib_id = "Device:C"
-    elif "transistor" == raw_libid:
-        lib_id = "Device:R"
-    elif "battery" == raw_libid or "cell" == raw_libid or "BAT" == raw_libid:
-        lib_id = "Device:Battery"
-    elif "led" == raw_libid or "LED" == raw_libid:
-        lib_id = "Device:LED"
-    elif "switch" == raw_libid or "SW" == raw_libid or "switch_spst" == raw_libid:
-        lib_id = "Switch:SW_SPST"
-
-    return lib_id
