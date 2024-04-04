@@ -129,9 +129,9 @@ env.bak/
 venv.bak/
 
 # Kicad generated files
-.kicad_sch
+*.kicad_sch
 
-# generaated json files
+# generated json files
 *.json
 
 # Spyder project settings

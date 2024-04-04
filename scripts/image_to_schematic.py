@@ -5,6 +5,8 @@ import scripts.kicad_utils as kicad_utils
 import skip
 import uuid
 
+from scripts.symbol_search import symbol_search
+
 ################################## HELPER FUNCTIONS ################################
 # to be moved into respective files
 
@@ -54,14 +56,14 @@ def match_libId(raw_libid: str):
         lib_id = "Device:R"
     elif raw_libid == "capacitor" or raw_libid == "C" or raw_libid == "C_Small":
         lib_id = "Device:C"
-    elif "transistor" == raw_libid:
-        lib_id = "Device:R"
     elif "battery" == raw_libid or "cell" == raw_libid or "BAT" == raw_libid:
         lib_id = "Device:Battery"
     elif "led" == raw_libid or "LED" == raw_libid:
         lib_id = "Device:LED"
     elif "switch" == raw_libid or "SW" == raw_libid or "switch_spst" == raw_libid:
         lib_id = "Switch:SW_SPST"
+    else:
+        lib_id = symbol_search.find_closest_matches(raw_libid)[0]
 
     return lib_id
 
@@ -90,7 +92,7 @@ def add_components_to_schematic(path_to_json = 'result.json', kicad_schematic_pa
     list_of_component_dict =[]
     for symbol in result["detected_components"]:
         # Add the component to the list
-        list_of_component_dict.append({"lib_id": match_libId(symbol["lib_id"]), "x": symbol["x"], "y": symbol["y"], "angle": symbol["angle"], "reference_name": symbol["reference"]})
+        list_of_component_dict.append({"lib_id": match_libId(symbol["lib_id"]), "x": symbol["x"], "y": symbol["y"], "angle": symbol["angle"], "reference_name": symbol["reference"], "value": symbol["value"]})
     
     scaled_components = scale_components(list_of_component_dict, 0.2)
 

@@ -273,7 +273,7 @@ def add_component_to_kicad_sch_file(kicad_sch_file, component_dict):
                 )
             )
         )
-        (property "Value" "{property_value}"
+        (property "Value" "{component_dict["value"]}"
             (at {component_dict["x"]} {component_dict["y"]} {component_dict["angle"]})
             (effects
                 (font
