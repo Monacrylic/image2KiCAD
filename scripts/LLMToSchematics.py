@@ -102,7 +102,7 @@ def image_model(inputs: dict):# -> str | list[str] | dict:
     if api_in_use == 'openai':
         model = ChatOpenAI(temperature=0.5, model="gpt-4-vision-preview", max_tokens=1024)
     elif api_in_use == 'gemini':
-        model = ChatGoogleGenerativeAI(model="gemini-pro-vision")
+        model = ChatGoogleGenerativeAI(temperature=0.5, model="gemini-pro-vision")
     msg = model.invoke(
         [HumanMessage(
             content=[

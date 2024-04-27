@@ -1,7 +1,7 @@
 numpy
-langchain==0.0.351
+langchain
 openai
-langchain-openai==0.0.6
+langchain-openai
 uuid
 PyYAML
 pyQt6
