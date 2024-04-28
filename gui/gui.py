@@ -2,7 +2,7 @@ import sys
 
 
 from PyQt6.QtWidgets import (QApplication, QWidget, QLabel, QVBoxLayout, QPushButton, QFileDialog, QCheckBox, QTextEdit, QComboBox, QTableWidget,
-                             QTableWidgetItem, QVBoxLayout, QCompleter)
+                             QTableWidgetItem, QCompleter)
 from PyQt6.QtCore import Qt
 import json
 from PyQt6.QtWidgets import QSpacerItem, QSizePolicy
@@ -26,10 +26,11 @@ class CustomCompleter(QCompleter):
 
 
 class ComponentEditor(QWidget):
-    def __init__(self):
+    def __init__(self, main_window_make_schematic):
         super().__init__()
         self.initUI()
         self.data = []  # To store the JSON data
+        self.main_window_make_schematic = main_window_make_schematic
         self.json_filepath = ""
         self.items = []
 
@@ -41,8 +42,6 @@ class ComponentEditor(QWidget):
         self.table.setColumnCount(6)
         self.table.setHorizontalHeaderLabels(
             ['Lib ID', 'Lib ID GPT', 'Reference', 'Value', 'X', 'Y'])
-        layout.addWidget(self.table)
-        self.setLayout(layout)
         # Set the column widths, making 'Lib ID' column wider
         # Set width of 'Lib ID' column to 200 pixels
         self.table.setColumnWidth(0, 250)
@@ -51,12 +50,19 @@ class ComponentEditor(QWidget):
         self.table.setColumnWidth(3, 100)
         self.table.setColumnWidth(4, 50)
         self.table.setColumnWidth(5, 50)
+        layout.addWidget(self.table)
 
-    def load_json(self, filepath):
-        with open(filepath, 'r') as file:
-            self.data = json.load(file)
-        self.json_filepath = filepath
-        self.load_component_data(self.data['detected_components'])
+        # Create and configure the Continue button
+        self.continue_button = QPushButton("Continue", self)
+        self.continue_button.clicked.connect(self.on_continue_clicked)
+        layout.addWidget(self.continue_button)
+
+        self.setLayout(layout)
+
+    def on_continue_clicked(self):
+        self.main_window_make_schematic()
+        self.close()
+        # print("self.main_window_make_schematic()")
 
     def load_symbols(self, filepath):
         with open(filepath, 'r') as file:
@@ -66,7 +72,12 @@ class ComponentEditor(QWidget):
                     self.items.append(f"{library['lib']}:{symbol}")
         self.items.sort()
 
-    def load_component_data(self, components):
+    def load_component_data(self):
+        filepath = 'result.json'
+        with open(filepath, 'r') as file:
+            self.data = json.load(file)
+        self.json_filepath = filepath
+        components = self.data['detected_components']
         if not self.items:  # Load symbols if not already loaded
             self.load_symbols('symbol_data.json')
         self.items.sort()
@@ -112,7 +123,9 @@ class Image2KiCAD(QWidget):
         self.image_path = None
         self.kicad_schematic_path = None
 
-        self.editor = ComponentEditor()  # Initializing the editor here
+        # Initializing the editor here
+        self.editor = ComponentEditor(
+            main_window_make_schematic=self.make_schematic)
         self.containsTextPrompt = False
 
     def initUI(self):
@@ -185,27 +198,27 @@ class Image2KiCAD(QWidget):
         layout.addWidget(self.addwires_checkbox)
 
         # Add append button
-        self.append_button = QPushButton('Append to Schematic')
+        self.append_button = QPushButton('Run')
         self.append_button.clicked.connect(self.append_to_schematic)
         self.append_button.setEnabled(False)
         layout.addWidget(self.append_button)
 
-        # Add title
-        JSON2KiCad_title_label = QLabel('JSON2KiCAD')
-        JSON2KiCad_title_label.setStyleSheet(
-            'font-size: 24px; font-weight: bold;')
-        layout.addWidget(JSON2KiCad_title_label)
+        # # Add title
+        # JSON2KiCad_title_label = QLabel('JSON2KiCAD')
+        # JSON2KiCad_title_label.setStyleSheet(
+        #     'font-size: 24px; font-weight: bold;')
+        # layout.addWidget(JSON2KiCad_title_label)
 
-        # Edit Component Mapping
-        self.open_editor_button = QPushButton('Edit Component Mapping JSON')
-        self.open_editor_button.clicked.connect(self.select_json_file_editor)
-        layout.addWidget(self.open_editor_button)
+        # # Edit Component Mapping
+        # self.open_editor_button = QPushButton('Edit Component Mapping JSON')
+        # self.open_editor_button.clicked.connect(self.select_json_file_editor)
+        # layout.addWidget(self.open_editor_button)
 
-        # Create schematic from JSON
-        self.json_to_kicad_button = QPushButton(
-            'Create schematic file from JSON')
-        self.json_to_kicad_button.clicked.connect(self.json_to_kicad)
-        layout.addWidget(self.json_to_kicad_button)
+        # # Create schematic from JSON
+        # self.json_to_kicad_button = QPushButton(
+        #     'Create schematic file from JSON')
+        # self.json_to_kicad_button.clicked.connect(self.json_to_kicad)
+        # layout.addWidget(self.json_to_kicad_button)
 
     def select_file1(self):
         file1, _ = QFileDialog.getOpenFileName(self, 'Select File 1')
@@ -281,7 +294,12 @@ class Image2KiCAD(QWidget):
         self.status_label.setText('Status: Processing...')
         self.append_button.setEnabled(False)
         # Start a new thread for processing
-        threading.Thread(target=self.process_schematic).start()
+        process_thread = threading.Thread(target=self.process_schematic)
+        process_thread.start()
+        process_thread.join()
+        # TODO: Open ComponentEditor.load_json('result.json')
+        self.editor.load_component_data()
+        self.editor.show()
 
     def process_schematic(self):
         # Call your processing functions here
@@ -295,8 +313,16 @@ class Image2KiCAD(QWidget):
             gpt_result = get_json_from_image_and_text(
                 self.image_path, self.input_prompt_field.toPlainText())
 
-        # TODO: Open ComponentEditor.load_json('result.json') 
+    # def json_to_kicad(self):
+    #     curr_json_file, _ = QFileDialog.getOpenFileName(
+    #         self, 'Select JSON File')
+    #     if curr_json_file:
+    #         # if new schematic is selected, create a new schematic
+    #         self.status_label.setText('Status: Processing...')
+    #         threading.Thread(target=self.make_schematic,
+    #                          args=(curr_json_file,)).start()
 
+    def make_schematic(self):
         # if new schematic is selected, create a new schematic
         if self.new_schematic_checkbox.isChecked():
             self.kicad_schematic_path = create_kicad_sch_file(
@@ -313,30 +339,6 @@ class Image2KiCAD(QWidget):
         self.status_label.setText(
             f'Status: Done. Created {self.kicad_schematic_path}')
         self.append_button.setEnabled(True)
-
-
-
-    def json_to_kicad(self):
-        curr_json_file, _ = QFileDialog.getOpenFileName(
-            self, 'Select JSON File')
-        if curr_json_file:
-            # if new schematic is selected, create a new schematic
-            self.status_label.setText('Status: Processing...')
-            threading.Thread(target=self.make_schematic,
-                             args=(curr_json_file,)).start()
-
-    def make_schematic(self, curr_json_file):
-        self.kicad_schematic_path = create_kicad_sch_file(
-            components=None, wires=None, new_file_name=None)
-        # Add components to schematic
-        schematic_path = add_components_to_schematic(
-            path_to_json=curr_json_file, kicad_schematic_path=self.kicad_schematic_path)
-
-        if self.addwires_checkbox.isChecked():
-            add_wires_to_schematic(
-                path_to_json=curr_json_file, kicad_schematic_path=self.kicad_schematic_path)
-        # Update status after processing completes
-        self.status_label.setText(f'Status: Done {self.kicad_schematic_path}')
 
     def select_json_file_editor(self):
         curr_json_file, _ = QFileDialog.getOpenFileName(
