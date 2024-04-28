@@ -100,8 +100,6 @@ def extract_subsection(content, subsection):
         list: A list containing the start index, end index, and the extracted subsection content.
     
     """
-    # subsection = '(symbol "R"'
-    # subsection = '(lib_symbols'
     subsection_start = content.find(subsection)
     if subsection_start == -1:
         return None  # Symbol not found
@@ -165,14 +163,50 @@ def extract_property_value(subsection, property_name):
     Returns:
         str: The value of the property.
     """
-    property_start = subsection.find(f'(property "{property_name}"')
+    property_start = subsection.find(f'(property "{property_name}"') + 1
     if property_start == -1:
         return None  # Property not found
 
     value_start = subsection.find(
         '"', property_start + len(f'(property "{property_name}"'))
     value_end = subsection.find('"', value_start + 1)
-    return subsection[value_start + 1:value_end]
+    return subsection[value_start+1:value_end]
+
+## Extract coordinates of Reference from the symbol library to use as offset (not always 100% accurate for now)
+def extract_property_coordinates(symbol_library, property_name):
+    
+    """
+    Extracts the property offset coordinates from a subsection based on the given property name.
+
+    Parameters:
+        symbol_library (str): The symbol library from which the property value is to be extracted.
+        property_name (str): The name of the property to be extracted.
+
+    Returns:
+        str: The coordinates of the property.
+    """
+
+    start_index = symbol_library.find(f'(property "{property_name}"')
+
+    # If the substring is found, continue to extract the values
+    if start_index != -1:
+        # Narrow down the search area to the part that contains the desired values
+        start_search_area = symbol_library.find('(at', start_index)
+        end_search_area = symbol_library.find(')', start_search_area)
+        
+        # Extract the substring containing the values
+        value_string = symbol_library[start_search_area:end_search_area]
+        
+        # Split the string to get the individual values
+        _, x, y, z = value_string.split()
+        
+        # Print the extracted values
+        extracted_values = (float(x), float(y), float(z))
+        print(extracted_values)
+    else:
+        extracted_values = "The specified property was not found."
+
+    return extracted_values
 
 # count number of pins in a symbol
 def count_pins_in_symbol(lib_id):
@@ -204,6 +238,33 @@ def count_pins_in_symbol(lib_id):
     else:
         raise Exception(
             f"Symbol {symbol_name} not found in {path_to_lib_kicad_sym_file}")
+
+def find_justification(symbol_library):
+    
+    """
+    Find if the value and reference are justified left, right or centered.
+    If the there is not justify property, return None.
+
+    Parameters:
+        symbol_library (str): The symbol library section.
+
+    Returns:
+        string: The alignment of the properties.
+    """
+
+    
+    # Search for the index of "right" and "left" in the given text
+    right_index = symbol_library.find("right")
+    left_index = symbol_library.find("left")
+    
+    # Determine which substring is found and return the result
+    if right_index != -1 and (left_index == -1 or right_index < left_index):
+        return "right"
+    elif left_index != -1 and (right_index == -1 or left_index < right_index):
+        return "left"
+    else:
+        return None
+
 
 def add_component_to_kicad_sch_file(kicad_sch_file, component_dict):
     # if symbol for component is not lib_symbol, add it
@@ -241,10 +302,34 @@ def add_component_to_kicad_sch_file(kicad_sch_file, component_dict):
         # print("symbol_section? not found")
         raise Exception(f'symbol_section (symbol "{curr_lib_id}" not found')
 
+    refCord = list(extract_property_coordinates(symbol_section[2], "Reference"))
+    valueCord = list(extract_property_coordinates(symbol_section[2], "Value"))
+    justify = find_justification(symbol_section[2])
+
+    y_offset = refCord[1]-valueCord[1] # offset between reference and value
+    y_offset = 1.7
+
+    if component_dict["angle"] != 0:
+        xs = abs(refCord[0]) + 2.54
+        refCord[1] = round(component_dict["y"]-y_offset-xs,2)
+        refCord[0] = round(component_dict["x"],2)
+        valueCord[1] = round(component_dict["y"]- xs,2)
+        valueCord[0] = round(component_dict["x"],2)
+        justify = None
+    else:
+        refCord[0] = round(refCord[0]+component_dict["x"],2) + 0.5
+        refCord[1] = round(refCord[1]+component_dict["y"],2)
+        valueCord[0] = round(valueCord[0]+component_dict["x"],2)
+        valueCord[1] = round(valueCord[1]+component_dict["y"],2)
+
     description = extract_property_value(symbol_section[2], "Description")
 
     # get symbol description from lib_symbols
     property_value = extract_property_value(symbol_section[2], "Value")
+    
+    # If no value is provided, use the default value from the symbol library
+    if "value" not in component_dict:
+        component_dict["value"] = property_value
 
     # create a pin list for the symbol
     pin_count = symbol_section[2].count("(pin ")
@@ -266,19 +351,21 @@ def add_component_to_kicad_sch_file(kicad_sch_file, component_dict):
         (fields_autoplaced yes)
         (uuid "{uuid.uuid4()}")
         (property "Reference" "{component_dict["reference_name"]}"
-            (at {component_dict["x"]} {component_dict["y"]} {component_dict["angle"]})
+            (at {refCord[0]} {refCord[1]} {component_dict["angle"]})
             (effects
                 (font
                     (size 1.27 1.27)
                 )
+                {"" if justify is None else f'(justify {justify})'}
             )
         )
         (property "Value" "{component_dict["value"]}"
-            (at {component_dict["x"]} {component_dict["y"]} {component_dict["angle"]})
+            (at {valueCord[0]} {valueCord[1]} {component_dict["angle"]})
             (effects
                 (font
                     (size 1.27 1.27)
                 )
+                {"" if justify is None else f'(justify {justify})'}
             )
         )
         (property "Footprint" ""

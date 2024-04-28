@@ -38,10 +38,8 @@ def split_diagonal_segments(wire_list):
 def scale_components(components, scaling_factor):
     # Find the minimum and maximum x and y coordinates
     min_x = min(component['x'] for component in components)
-    max_x = max(component['x'] for component in components)
     min_y = min(component['y'] for component in components)
-    max_y = max(component['y'] for component in components)
-
+    
     # Scale the components
     scaled_components = []
     for component in components:
@@ -53,6 +51,21 @@ def scale_components(components, scaling_factor):
         scaled_components.append(scaled_component)
 
     return scaled_components
+
+def scale_components_in_relative_coordinates(components, scaling_factor):
+    # Find the minimum and maximum x and y coordinates
+    # Scale the components
+    scaled_components = []
+    for component in components:
+        scaled_x = 20 + (component['x']) * scaling_factor
+        scaled_y = 20 + (component['y']) * scaling_factor
+        scaled_component = component.copy()
+        scaled_component['x'] = int(scaled_x)
+        scaled_component['y'] = int(scaled_y)
+        scaled_components.append(scaled_component)
+    
+    return scaled_components
+
 
 
 def match_libId(raw_libid: str):
@@ -127,7 +140,8 @@ def add_components_to_schematic(path_to_json='result.json', kicad_schematic_path
         list_of_component_dict.append({"lib_id": symbol["lib_id"], "x": symbol["x"], "y": symbol["y"],
                                       "angle": symbol["angle"], "reference_name": symbol["reference"], "value": symbol["value"]})
 
-    scaled_components = scale_components(list_of_component_dict, 0.2)
+    # scaled_components = scale_components(list_of_component_dict, 0.2)
+    scaled_components = scale_components_in_relative_coordinates(list_of_component_dict, 5)
 
     # Change angle t0 90 for all resistors having angle 0 and 0 for all resistors having angle 90
     for component in scaled_components:
