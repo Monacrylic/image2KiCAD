@@ -1,5 +1,5 @@
 
-from scripts.LLMToSchematics import image_to_schematics
+from scripts.LLMToSchematics import image_to_schematics, image_text_to_schematics, text_to_schematics
 import json
 import scripts.kicad_utils as kicad_utils
 import skip
@@ -81,6 +81,26 @@ def get_json_from_image(image_path):
         component['lib_id_gpt'] = component['lib_id']
         component['lib_id'] = match_libId(component['lib_id'])
 
+    with open('result.json', 'w') as f:
+        json.dump(result, f, indent=4)
+    return result
+
+
+def get_json_from_image_and_text(image_path, prompt):
+    result = image_text_to_schematics(image_path, prompt)
+    for component in result['detected_components']:
+        component['lib_id_gpt'] = component['lib_id']
+        component['lib_id'] = match_libId(component['lib_id'])
+    with open('result.json', 'w') as f:
+        json.dump(result, f, indent=4)
+    return result
+
+
+def get_json_from_text(prompt):
+    result = text_to_schematics(prompt)
+    for component in result['detected_components']:
+        component['lib_id_gpt'] = component['lib_id']
+        component['lib_id'] = match_libId(component['lib_id'])
     with open('result.json', 'w') as f:
         json.dump(result, f, indent=4)
     return result

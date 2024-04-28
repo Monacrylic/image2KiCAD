@@ -128,6 +128,27 @@ def image_model(inputs: dict):  # -> str | list[str] | dict:
     return msg.content
 
 
+@chain
+def text_model(inputs: dict):  # -> str | list[str] | dict:
+    """Invoke model with image and prompt."""
+    # choose model based on the API key
+    if api_in_use == 'openai':
+        model = ChatOpenAI(
+            temperature=0.5, model="gpt-4-vision-preview", max_tokens=1024)
+    elif api_in_use == 'gemini':
+        model = ChatGoogleGenerativeAI(
+            temperature=0.5, model="gemini-pro")
+    msg = model.invoke(
+        [HumanMessage(
+            content=[
+                {"type": "text", "text": inputs["prompt"]},
+                {"type": "text", "text": parser.get_format_instructions()},
+            ]
+        )]
+    )
+    return msg.content
+
+
 parser = JsonOutputParser(pydantic_object=SchematicsInformation)
 
 # including start and end position on the image (you may approaximate using pixel locations)
@@ -148,8 +169,8 @@ def image_to_schematics(image_path: str) -> dict:
                                 'prompt': vision_prompt})
 
 
-def image_text_to_schematics(image_path: str) -> dict:
-    user_request = input("Describe your request:")
+def image_text_to_schematics(image_path: str, user_request: str) -> dict:
+    # user_request = input("Describe your request:")
     vision_prompt = f"""
     Look at this image which contains current design of a circuit schematic diagram which the user is currently working on.
     The user has requested that {user_request}
@@ -161,3 +182,17 @@ def image_text_to_schematics(image_path: str) -> dict:
     vision_chain = load_image_chain | image_model | parser
     return vision_chain.invoke({'image_path': f'{image_path}',
                                'prompt': vision_prompt})
+
+
+def text_to_schematics(user_request: str) -> dict:
+    # user_request = input("Describe your request:")
+    vision_prompt = f"""
+    You are a helpful circuit designer,
+    The user has requested that {user_request}
+    Please construct a circuit based on these information.
+    You must make sure all the referneces stays consistent throught your answer.
+    Please just reply ONLY in JSON output and nothing else!
+    """
+
+    vision_chain = text_model | parser
+    return vision_chain.invoke({'prompt': vision_prompt})
