@@ -68,16 +68,11 @@ load_image_chain = TransformChain(
 
 # Define dictionary structure
 from typing import TypedDict
-class Wire(TypedDict):
-    x: float
-    y: float
-    end_x: float
-    end_y: float
 class Component(TypedDict):
     lib_id: str
-    x: float
-    y: float
-    angle: float
+    x: int
+    y: int
+    angle: int
     reference: str
     value: str
 class Connections(TypedDict):
@@ -89,7 +84,7 @@ class Connections(TypedDict):
 
 class SchematicsInformation(BaseModel):
     """Information that describes the schematics"""
-    detected_components: list[Component] = Field(description="list of dictionary containing the name,XY coordinates, angle and reference for a circuit component")
+    detected_components: list[Component] = Field(description="list of dictionaries containing the name, relative XY cartesian coordinates (Origin is at top left, so moving towards right should increase X, moving downwards, should increase. For. eg. If componentA is to the down-right of componentB which is at (0,0), the coordinates of component A would be (1,1)), angle and reference for a circuit component")
     component_connections: list[Connections] = Field(description="list of dictionaries containing the connections from one pin of a reference to the pin of another reference. for eg {'A_ref': 'R1', 'A_pin': 1, 'B_ref': 'R2', 'B_pin': 2} means pin 1 of R1 is connected to pin 2 of R2")
     
 # Set verbose
@@ -100,9 +95,9 @@ def image_model(inputs: dict):# -> str | list[str] | dict:
     """Invoke model with image and prompt."""
     # choose model based on the API key
     if api_in_use == 'openai':
-        model = ChatOpenAI(temperature=0.5, model="gpt-4-vision-preview", max_tokens=1024)
+        model = ChatOpenAI(temperature=0.2, model="gpt-4-vision-preview", max_tokens=1024)
     elif api_in_use == 'gemini':
-        model = ChatGoogleGenerativeAI(temperature=0.5, model="gemini-pro-vision")
+        model = ChatGoogleGenerativeAI(temperature=0.2, model="gemini-pro-vision")
     msg = model.invoke(
         [HumanMessage(
             content=[
@@ -119,9 +114,9 @@ def text_model(inputs: dict):# -> str | list[str] | dict:
     """Invoke model with image and prompt."""
     # choose model based on the API key
     if api_in_use == 'openai':
-        model = ChatOpenAI(temperature=0.5, model="gpt-4-vision-preview", max_tokens=1024)
+        model = ChatOpenAI(temperature=0.2, model="gpt-4-vision-preview", max_tokens=1024)
     elif api_in_use == 'gemini':
-        model = ChatGoogleGenerativeAI(temperature=0.5, model="gemini-pro-vision")
+        model = ChatGoogleGenerativeAI(temperature=0.2, model="gemini-pro")
     msg = model.invoke(
         [HumanMessage(
             content=[
@@ -140,8 +135,8 @@ parser = JsonOutputParser(pydantic_object=SchematicsInformation)
 def image_to_schematics(image_path: str) -> dict:
    vision_prompt = """
    Given the image which contains a circuit schematic drawing, provide the following information:
-   - A list of components present on this schematic drawing, including their name in lowercase alphabet (like resistor, capacitor, switch etc), position on the image, and orientation (you may approaximate using pixel locations)
-   - A list of connections made by the components, you must make sure all the referneces stays consistent throught your answer!
+   - A list of components present on this schematic drawing, including their name in lowercase alphabet (like resistor, capacitor, switch etc), position in relative coordinates, and orientation in degrees (0, 90, 180, 270)
+   - A list of connections made by the components, you must make sure all the references stays consistent throught your answer!
    Please just reply ONLY in JSON output and nothing else!
    """
 
@@ -167,8 +162,8 @@ def text_to_schematics(user_request: str) -> dict:
     # user_request = input("Describe your request:")
     vision_prompt = f"""
     You are a helpful circuit designer,
-    The user has requested that {user_request}
-    Please construct a circuit based on these information.
+    The user has requested: {user_request}
+    Please construct a circuit based on these information. Ensure all X,Y coordinates are in relative coordinates, with the origin at the top left corner of the schematic.
     You must make sure all the referneces stays consistent throught your answer.
     Please just reply ONLY in JSON output and nothing else!
     """
