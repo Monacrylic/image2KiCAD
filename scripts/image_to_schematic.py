@@ -1,5 +1,5 @@
 
-from scripts.LLMToSchematics import image_to_schematics
+from scripts.LLMToSchematics import image_to_schematics, image_text_to_schematics, text_to_schematics
 import json
 import scripts.kicad_utils as kicad_utils
 import skip
@@ -72,6 +72,18 @@ def match_libId(raw_libid: str):
 
 def get_json_from_image(image_path):
     result= image_to_schematics(image_path)
+    with open('result.json', 'w') as f:
+        json.dump(result, f, indent=4)
+    return result
+
+def get_json_from_image_and_text(image_path, prompt):
+    result= image_text_to_schematics(image_path, prompt)
+    with open('result.json', 'w') as f:
+        json.dump(result, f, indent=4)
+    return result
+
+def get_json_from_text(prompt):
+    result= text_to_schematics(prompt)
     with open('result.json', 'w') as f:
         json.dump(result, f, indent=4)
     return result
