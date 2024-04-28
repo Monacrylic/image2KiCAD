@@ -2,6 +2,7 @@
 # python3 -m pip install -U openai             #(1.14.3)
 # export OPENAI_API_KEY="..."
 
+from typing import TypedDict
 import os
 import langchain
 from langchain_core.pydantic_v1 import BaseModel, Field
@@ -51,14 +52,14 @@ else:
 def load_image(inputs: dict) -> dict:
     """Load image from file and encode it as base64."""
     image_path = inputs["image_path"]
-  
+
     def encode_image(image_path):
         with open(image_path, "rb") as image_file:
             return base64.b64encode(image_file.read()).decode('utf-8')
     image_base64 = encode_image(image_path)
     return {"image": image_base64}
 
-    
+
 load_image_chain = TransformChain(
     input_variables=["image_path"],
     output_variables=["image"],
@@ -67,12 +68,15 @@ load_image_chain = TransformChain(
 
 
 # Define dictionary structure
-from typing import TypedDict
+
+
 class Wire(TypedDict):
     x: float
     y: float
     end_x: float
     end_y: float
+
+
 class Component(TypedDict):
     lib_id: str
     x: float
@@ -80,6 +84,8 @@ class Component(TypedDict):
     angle: float
     reference: str
     value: str
+
+
 class Connections(TypedDict):
     A_ref: str
     A_pin: int
@@ -89,29 +95,36 @@ class Connections(TypedDict):
 
 class SchematicsInformation(BaseModel):
     """Information that describes the schematics"""
-    detected_components: list[Component] = Field(description="list of dictionary containing the name,XY coordinates, angle and reference for a circuit component")
-    component_connections: list[Connections] = Field(description="list of dictionaries containing the connections from one pin of a reference to the pin of another reference. for eg {'A_ref': 'R1', 'A_pin': 1, 'B_ref': 'R2', 'B_pin': 2} means pin 1 of R1 is connected to pin 2 of R2")
-    
+    detected_components: list[Component] = Field(
+        description="list of dictionary containing the name,XY coordinates, angle and reference for a circuit component")
+    component_connections: list[Connections] = Field(
+        description="list of dictionaries containing the connections from one pin of a reference to the pin of another reference. for eg {'A_ref': 'R1', 'A_pin': 1, 'B_ref': 'R2', 'B_pin': 2} means pin 1 of R1 is connected to pin 2 of R2")
+
+
 # Set verbose
 globals.set_debug(True)
 
+
 @chain
-def image_model(inputs: dict):# -> str | list[str] | dict:
+def image_model(inputs: dict):  # -> str | list[str] | dict:
     """Invoke model with image and prompt."""
     # choose model based on the API key
     if api_in_use == 'openai':
-        model = ChatOpenAI(temperature=0.5, model="gpt-4-vision-preview", max_tokens=1024)
+        model = ChatOpenAI(
+            temperature=0.5, model="gpt-4-vision-preview", max_tokens=1024)
     elif api_in_use == 'gemini':
-        model = ChatGoogleGenerativeAI(temperature=0.5, model="gemini-pro-vision")
+        model = ChatGoogleGenerativeAI(
+            temperature=0.5, model="gemini-pro-vision")
     msg = model.invoke(
         [HumanMessage(
             content=[
                 {"type": "text", "text": inputs["prompt"]},
                 {"type": "text", "text": parser.get_format_instructions()},
-                {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{inputs['image']}"}},
-                ]
-            )]
-        )
+                {"type": "image_url", "image_url": {
+                    "url": f"data:image/png;base64,{inputs['image']}"}},
+            ]
+        )]
+    )
     return msg.content
 
 
@@ -120,17 +133,20 @@ parser = JsonOutputParser(pydantic_object=SchematicsInformation)
 # including start and end position on the image (you may approaximate using pixel locations)
 # including their name, position on the image, and orientation (you may approaximate using pixel locations)
 # Can you recognize and list all the electronic components on this schematic drawing and generate an netlist-like list of this diagram?
+
+
 def image_to_schematics(image_path: str) -> dict:
-   vision_prompt = """
+    vision_prompt = """
    Given the image which contains a circuit schematic drawing, provide the following information:
    - A list of components present on this schematic drawing, including their name in lowercase alphabet (like resistor, capacitor, switch etc), position on the image, and orientation (you may approaximate using pixel locations)
    - A list of connections made by the components, you must make sure all the referneces stays consistent throught your answer!
    Please just reply ONLY in JSON output and nothing else!
    """
 
-   vision_chain = load_image_chain | image_model | parser
-   return vision_chain.invoke({'image_path': f'{image_path}', 
-                               'prompt': vision_prompt})
+    vision_chain = load_image_chain | image_model | parser
+    return vision_chain.invoke({'image_path': f'{image_path}',
+                                'prompt': vision_prompt})
+
 
 def image_text_to_schematics(image_path: str) -> dict:
     user_request = input("Describe your request:")
@@ -143,6 +159,5 @@ def image_text_to_schematics(image_path: str) -> dict:
     """
 
     vision_chain = load_image_chain | image_model | parser
-    return vision_chain.invoke({'image_path': f'{image_path}', 
+    return vision_chain.invoke({'image_path': f'{image_path}',
                                'prompt': vision_prompt})
-

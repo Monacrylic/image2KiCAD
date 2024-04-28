@@ -1,3 +1,4 @@
+*error_output.txt
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -133,6 +134,7 @@ venv.bak/
 
 # generated json files
 *.json
+!symbol_data.json
 
 # Spyder project settings
 .spyderproject
