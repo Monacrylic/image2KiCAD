@@ -295,6 +295,8 @@ class Image2KiCAD(QWidget):
             gpt_result = get_json_from_image_and_text(
                 self.image_path, self.input_prompt_field.toPlainText())
 
+        # TODO: Open ComponentEditor.load_json('result.json') 
+
         # if new schematic is selected, create a new schematic
         if self.new_schematic_checkbox.isChecked():
             self.kicad_schematic_path = create_kicad_sch_file(
@@ -311,6 +313,8 @@ class Image2KiCAD(QWidget):
         self.status_label.setText(
             f'Status: Done. Created {self.kicad_schematic_path}')
         self.append_button.setEnabled(True)
+
+
 
     def json_to_kicad(self):
         curr_json_file, _ = QFileDialog.getOpenFileName(
