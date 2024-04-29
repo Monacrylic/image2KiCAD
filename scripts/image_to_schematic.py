@@ -141,7 +141,7 @@ def add_components_to_schematic(path_to_json='result.json', kicad_schematic_path
                                       "angle": symbol["angle"], "reference_name": symbol["reference"], "value": symbol["value"]})
 
     # scaled_components = scale_components(list_of_component_dict, 0.2)
-    scaled_components = scale_components_in_relative_coordinates(list_of_component_dict, 5)
+    scaled_components = scale_components_in_relative_coordinates(list_of_component_dict, 10)
 
     # Change angle t0 90 for all resistors having angle 0 and 0 for all resistors having angle 90
     for component in scaled_components:
