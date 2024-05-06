@@ -70,7 +70,7 @@ def scale_components_in_relative_coordinates(components, scaling_factor):
 
 def match_libId(raw_libid: str):
     lib_id = raw_libid
-    if raw_libid == "resistor" or raw_libid == "R":
+    if raw_libid == "resistor" or raw_libid == "R" or raw_libid== "Resistor":
         lib_id = "Device:R"
     elif raw_libid == "capacitor" or raw_libid == "C" or raw_libid == "C_Small":
         lib_id = "Device:C"
