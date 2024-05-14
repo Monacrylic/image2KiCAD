@@ -191,3 +191,18 @@ def add_wires_to_schematic(path_to_json='result.json', kicad_schematic_path=None
     new_wire_list = split_diagonal_segments(wire_list)
     kicad_utils.modify_kicad_sch_file(
         wires=new_wire_list, file_path=kicad_schematic_path)
+
+def make_schematic_from_JSON(addWires = False):
+        # if new schematic is selected, create a new schematic
+        
+        kicad_schematic_path = create_kicad_sch_file(components=None, wires=None, new_file_name=None)
+
+        # Add components to schematic
+        schematic_path = add_components_to_schematic(path_to_json='result.json', kicad_schematic_path=kicad_schematic_path)
+
+        if addWires:
+            add_wires_to_schematic(
+                path_to_json='result.json', kicad_schematic_path=kicad_schematic_path)
+        # Update status after processing completes
+        print("Schematic created at: ", schematic_path)
+        return schematic_path

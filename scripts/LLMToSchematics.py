@@ -99,7 +99,7 @@ def image_model(inputs: dict):  # -> str | list[str] | dict:
     """Invoke model with image and prompt."""
     # choose model based on the API key
     if api_in_use == 'openai':
-        model = ChatOpenAI(temperature=0.1, model="gpt-4-vision-preview", max_tokens=1024)
+        model = ChatOpenAI(temperature=0.1, model="gpt-4o", max_tokens=1024)
     elif api_in_use == 'gemini':
         model = ChatGoogleGenerativeAI(temperature=0.1, model="gemini-pro-vision")
     msg = model.invoke(
@@ -120,7 +120,7 @@ def text_model(inputs: dict):  # -> str | list[str] | dict:
     """Invoke model with image and prompt."""
     # choose model based on the API key
     if api_in_use == 'openai':
-        model = ChatOpenAI(temperature=0.1, model="gpt-4-vision-preview", max_tokens=1024)
+        model = ChatOpenAI(temperature=0.1, model="gpt-4o", max_tokens=1024)
     elif api_in_use == 'gemini':
         model = ChatGoogleGenerativeAI(temperature=0.1, model="gemini-pro")
     msg = model.invoke(
