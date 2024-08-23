@@ -1,4 +1,5 @@
-# image2Kicad (WIP!)
+# Archived: This project has been moved to Faradworks, until we finish training our CV models.
+# image2Kicad (WIP!) 
 
 [![License](https://img.shields.io/badge/license-GNU%20GPL-blue.svg)](https://github.com/monacrylic/image2KiCAD/blob/main/LICENSE)
 
